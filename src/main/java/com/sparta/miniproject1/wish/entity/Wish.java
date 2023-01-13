@@ -1,6 +1,7 @@
 package com.sparta.miniproject1.wish.entity;
 
 import com.sparta.miniproject1.post.entity.Post;
+import com.sparta.miniproject1.user.entity.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
