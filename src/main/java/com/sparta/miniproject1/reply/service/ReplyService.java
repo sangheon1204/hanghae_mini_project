@@ -28,7 +28,7 @@ public class ReplyService {
         }
         Comment comment = commentRepository.findById(request.getId()).get();
 
-        Reply reply = new Reply(comment, user.getUsername(), request.getComment());
+        Reply reply = new Reply(comment, user, request.getComment());
 
         replyRepository.save(reply);
         return new ResponseMessageDto("저장 성공!");
@@ -42,7 +42,7 @@ public class ReplyService {
         }
         Reply reply = replyRepository.findById(request.getId()).get();
 
-        if(!reply.getUsername().equals(user.getUsername())) {
+        if(!reply.getUser().getUsername().equals(user.getUsername())) {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             throw new IllegalArgumentException("본인이 작성한 대댓글만 수정 가능합니다!");
         }
@@ -59,7 +59,7 @@ public class ReplyService {
         }
         Reply reply = replyRepository.findById(request.getId()).get();
 
-        if (!reply.getUsername().equals(user.getUsername())) {
+        if (!reply.getUser().getUsername().equals(user.getUsername())) {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             throw new IllegalArgumentException("본인이 작성한 댓글만 삭제 가능합니다!");
         }
