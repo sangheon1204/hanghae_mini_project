@@ -1,6 +1,7 @@
 package com.sparta.miniproject1.user.jwt;
 
 import com.sparta.miniproject1.user.dto.SecurityExceptionDto;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +21,11 @@ import java.io.IOException;
 @Slf4j
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
+
     private final JwtUtil jwtUtil;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        //내부 필터
         String token = jwtUtil.resolveToken(request);
 
         if(token != null) {
