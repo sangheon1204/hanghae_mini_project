@@ -4,9 +4,9 @@ import lombok.Getter;
 
 @Getter
 public class ResponseDto {
-    private String msg;
+    private String message;
 
     public ResponseDto(String msg) {
-        this.msg = msg;
+        this.message = msg;
     }
 }
