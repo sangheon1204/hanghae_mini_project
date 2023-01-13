@@ -27,8 +27,9 @@ public class PostController {
     public Page<Post> getPosts(
             @RequestParam("page") int page,
             @RequestParam("size") int size,
-            @RequestParam("isAsc") boolean isAsc
+            @RequestParam("isAsc") boolean isAsc,
+            @RequestParam("sortBy") String sortBy
     ) {
-        return postService.getPosts(page-1,size,isAsc);
+        return postService.getPosts(page-1,size,isAsc,sortBy);
     }
 }

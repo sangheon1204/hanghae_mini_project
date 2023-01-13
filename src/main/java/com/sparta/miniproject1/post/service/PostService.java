@@ -31,10 +31,10 @@ public class PostService {
     }
 
     //전체 게시글 조회하기
-    public Page<Post> getPosts(int page, int size, boolean isAsc) {
+    public Page<Post> getPosts(int page, int size, boolean isAsc, String sortBy) {
         //페이징 처리
         Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Sort sort = Sort.by(direction);
+        Sort sort = Sort.by(direction,sortBy );
         Pageable pageable = PageRequest.of(page,size,sort);
         //게시글 전체 조회
         Page<Post> posts;
@@ -43,7 +43,7 @@ public class PostService {
     }
 
     //게시물 id로 조회하기
-    public PostResponseDto getPost(Long id) {
-        //id로
-    }
+//    public PostResponseDto getPost(Long id) {
+//        //id로
+//    }
 }
