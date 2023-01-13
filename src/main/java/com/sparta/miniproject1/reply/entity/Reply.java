@@ -1,6 +1,7 @@
 package com.sparta.miniproject1.reply.entity;
 
 import com.sparta.miniproject1.comment.entity.Comment;
+import com.sparta.miniproject1.user.entity.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,15 +20,16 @@ public class Reply {
     @JoinColumn(nullable = false)
     Comment comment;
 
-    @Column(nullable = false)
-    String username;
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    User user;
 
     @Column(nullable = false)
     String reply;
 
-    public Reply(Comment comment, String username, String reply) {
+    public Reply(Comment comment, User user, String reply) {
         this.comment = comment;
-        this.username = username;
+        this.user = user;
         this.reply = reply;
     }
 
