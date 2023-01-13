@@ -1,5 +1,6 @@
 package com.sparta.miniproject1.post.controller;
 
+import com.sparta.miniproject1.post.dto.PageResponseDto;
 import com.sparta.miniproject1.post.dto.PostRequestDto;
 import com.sparta.miniproject1.post.dto.PostResponseDto;
 import com.sparta.miniproject1.post.dto.ResponseDto;
@@ -24,7 +25,7 @@ public class PostController {
     }
     //전체 목록 조회
     @GetMapping("/posts")
-    public Page<Post> getPosts(
+    public Page<PageResponseDto> getPosts(
             @RequestParam("page") int page,
             @RequestParam("size") int size,
             @RequestParam("isAsc") boolean isAsc,

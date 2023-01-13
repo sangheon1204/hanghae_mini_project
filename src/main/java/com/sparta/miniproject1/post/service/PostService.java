@@ -1,6 +1,7 @@
 package com.sparta.miniproject1.post.service;
 
 import com.sparta.miniproject1.post.Comments;
+import com.sparta.miniproject1.post.dto.PageResponseDto;
 import com.sparta.miniproject1.post.dto.PostRequestDto;
 import com.sparta.miniproject1.post.dto.PostResponseDto;
 import com.sparta.miniproject1.post.dto.ResponseDto;
@@ -32,7 +33,7 @@ public class PostService {
     }
 
     //전체 게시글 조회하기
-    public Page<Post> getPosts(int page, int size, boolean isAsc, String sortBy) {
+    public Page<PageResponseDto> getPosts(int page, int size, boolean isAsc, String sortBy) {
         //페이징 처리
         Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(direction,sortBy );
@@ -40,7 +41,8 @@ public class PostService {
         //게시글 전체 조회
         Page<Post> posts;
         posts = postRepository.findAll(pageable);
-        return posts;
+        Page<PageResponseDto> pageResponseDto = posts.map(PageResponseDto :: toDto);
+        return pageResponseDto;
     }
 
 //    게시물 id로 조회하기
