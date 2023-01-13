@@ -1,6 +1,9 @@
 package com.sparta.miniproject1.user.entity;
 
 
+
+import com.sparta.miniproject1.user.dto.ChangePasswordRequestDto;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -38,4 +41,7 @@ public class User {
         this.role = role;
     }
 
+    public void update(String npw) {
+        this.password=npw;
+    }
 }
