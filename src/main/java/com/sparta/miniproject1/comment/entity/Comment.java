@@ -1,7 +1,7 @@
 package com.sparta.miniproject1.comment.entity;
 
 import com.sparta.miniproject1.comment.dto.CommentRequestDto;
-import com.sparta.miniproject1.product.entity.Post;
+import com.sparta.miniproject1.post.entity.Post;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
