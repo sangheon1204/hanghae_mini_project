@@ -20,7 +20,7 @@ public class CommentController {
         return commentService.create(request, userDetails.getUser(), response);
     }
 
-    @PatchMapping("/comments")    //request 에 comment 의 아이디가 들어있음
+    @PutMapping("/comments")    //request 에 comment 의 아이디가 들어있음
     public ResponseMessageDto update(@RequestBody CommentRequestDto request, @AuthenticationPrincipal UserDetailsImpl userDetails, HttpServletResponse response) {
         return commentService.update(request, userDetails.getUser(), response);
     }

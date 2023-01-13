@@ -22,9 +22,9 @@ public class CommentService {
 
     @Transactional
     public ResponseMessageDto create(CommentRequestDto request, User user, HttpServletResponse response) {
-        if(postRepository.findById(request.getId()).isEmpty()) {
+        if(commentRepository.findById(request.getId()).isEmpty()) {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
-            throw new IllegalArgumentException("해당 아이디의 게시글이 존재하지 않습니다.");
+            throw new IllegalArgumentException("해당 아이디의 댓글이 존재하지 않습니다.");
         }
         Post post = postRepository.findById(request.getId()).get();
 

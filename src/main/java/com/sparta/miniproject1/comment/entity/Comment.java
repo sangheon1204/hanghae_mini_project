@@ -19,7 +19,7 @@ public class Comment{
     Long id;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(name = "postId", nullable = false)
     private Post post;
 
     @Column(nullable = false)
