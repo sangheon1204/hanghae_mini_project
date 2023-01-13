@@ -8,6 +8,7 @@ import com.sparta.miniproject1.user.entity.UserRoleEnum;
 import com.sparta.miniproject1.user.jwt.JwtUtil;
 import com.sparta.miniproject1.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -32,6 +34,7 @@ public class UserService {
         //이름, 비밀번호 대조를 위해 값을 뽑아놓음
         String username = signupRequestDto.getUsername();
         String pwcheck =  signupRequestDto.getPassword();
+        String passwordCheck = signupRequestDto.getPasswordCheck();
 
         //username 확인
         if(!Pattern.matches(pt, username)){
@@ -42,7 +45,10 @@ public class UserService {
         if(!Pattern.matches(ptt, pwcheck)){
             throw new IllegalArgumentException(
                     "비밀번호는 최소 8자 이상, 15자 이하이며 알파벳 대소문자(a~z, A~Z), 숫자(0~9), 특수문자로 되어야합니다.");
-
+        }
+        if(!pwcheck.matches(passwordCheck)){
+            throw new IllegalArgumentException(
+                    "비밀번호 입력을 다시 확인해주세요.");
         }
         // 회원 중복 확인
         Optional<User> found = userRepository.findByUsername(username);

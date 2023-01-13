@@ -28,29 +28,15 @@ public class UserController {
         return new ModelAndView("login");
     }
 
-//    @PostMapping("/signup") //이거는 Http 리턴용 Postman으로 하려니 안되서 이렇게 함;;
-//    public ResponseEntity<?> signup(@RequestBody SignupRequestDto signupRequestDto) {
-//        userService.signup(signupRequestDto);
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setLocation(URI.create("/api/user/login"));
-//        return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
-//    }
     @PostMapping("/signup")
     public String signup(@RequestBody SignupRequestDto signupRequestDto) {
         userService.signup(signupRequestDto);
-        return "success";
+        return "가입 완료";
     }
-//    @PostMapping("/login") //이거는 Http 리턴용 Postman으로 하려니 안되서 이렇게 함;;
-//    public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
-//        userService.login(loginRequestDto, response);
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setLocation(URI.create("/api/user/signup"));
-//        return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
-//    }
     @PostMapping("/login")
     public String login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
         userService.login(loginRequestDto, response);
-        return "success";
+        return "로그인 완료";
     }
     // 로그인 한 유저가 메인페이지를 요청할 때 유저의 이름 반환
     @GetMapping("/info")
