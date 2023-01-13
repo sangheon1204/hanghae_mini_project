@@ -1,5 +1,6 @@
 package com.sparta.miniproject1.post.service;
 
+import com.sparta.miniproject1.post.Comments;
 import com.sparta.miniproject1.post.dto.PostRequestDto;
 import com.sparta.miniproject1.post.dto.PostResponseDto;
 import com.sparta.miniproject1.post.dto.ResponseDto;
@@ -42,8 +43,12 @@ public class PostService {
         return posts;
     }
 
-    //게시물 id로 조회하기
-//    public PostResponseDto getPost(Long id) {
-//        //id로
-//    }
+//    게시물 id로 조회하기
+    public PostResponseDto getPost(Long id) {
+        //id로 게시물 조회하기
+        Post post = postRepository.findById(id).orElseThrow(
+                ()-> new IllegalArgumentException("해당 게시물은 존재하지 않습니다.")
+        );
+        return new PostResponseDto(post,new Comments(post.getCommentList()));
+    }
 }

@@ -32,4 +32,9 @@ public class PostController {
     ) {
         return postService.getPosts(page-1,size,isAsc,sortBy);
     }
+    //id로 게시글 단건 조회
+    @GetMapping("/posts/{id}")
+    public PostResponseDto getPost(@PathVariable Long id) {
+        return postService.getPost(id);
+    }
 }
