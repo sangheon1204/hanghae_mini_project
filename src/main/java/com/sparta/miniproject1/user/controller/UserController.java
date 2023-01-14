@@ -55,14 +55,8 @@ public class UserController {
     public ResponseDto changePassword(@PathVariable Long id, @RequestBody ChangePasswordRequestDto changePasswordRequestDto,  HttpServletRequest request) {
         return userService.changePassword(id,changePasswordRequestDto, request);
     }
-
-    @GetMapping("/forbidden")
-    public ModelAndView getForbidden() {
-        return new ModelAndView("forbidden");
-    }
-
-    @PostMapping("/forbidden")
-    public ModelAndView postForbidden() {
-        return new ModelAndView("forbidden");
+    @DeleteMapping("/delete/{id}")
+    public ResponseDto deleteBoard(@PathVariable Long id, HttpServletRequest request) {
+        return userService.deleteId(id, request);
     }
 }
