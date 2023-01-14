@@ -1,6 +1,7 @@
 package com.sparta.miniproject1.user.entity;
 import com.sparta.miniproject1.comment.entity.Comment;
 import com.sparta.miniproject1.post.entity.Post;
+import com.sparta.miniproject1.reply.entity.Reply;
 import com.sparta.miniproject1.wish.entity.Wish;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,9 +29,12 @@ public class User {
     //상품 찜한 리스트
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Wish> wishList = new ArrayList<>();
+    //응답 리스트
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> commentList = new ArrayList<>();
-
+    //답장 리스트
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reply> replyList = new ArrayList<>();
 
     public User(String username, String password, UserRoleEnum role) {
         this.username = username;

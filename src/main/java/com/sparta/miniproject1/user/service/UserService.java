@@ -133,4 +133,27 @@ public class UserService {
         user.update(npww);
         return new ResponseDto("비밀번호변경 완료");
     }
+
+
+    @Transactional
+    public ResponseDto deleteId(Long id, HttpServletRequest request) {
+        String token = jwtUtil.resolveToken(request);
+        Claims claims;
+        if (jwtUtil.validateToken(token)) {
+            // 토큰에서 사용자 정보 가져오기
+            claims = jwtUtil.getUserInfoFromToken(token);
+        } else {
+            throw new IllegalArgumentException("Token Error");
+        }
+        // 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
+        User userr =  userRepository.findByUsername(claims.getSubject()).orElseThrow(
+                () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
+        );
+        if(userr.getId()!=id){ //대리 삭제 방지
+            return new ResponseDto("다른 아이디 삭제는 안됩니다.");
+        }
+        userRepository.deleteById(id);
+        return new ResponseDto("아이디 삭제 완료");
+
+    }
 }
