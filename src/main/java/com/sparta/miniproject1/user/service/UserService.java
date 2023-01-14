@@ -2,11 +2,8 @@ package com.sparta.miniproject1.user.service;
 
 
 
-import com.sparta.miniproject1.user.dto.ChangePasswordRequestDto;
-import com.sparta.miniproject1.user.dto.ChangePasswordResponseDto;
+import com.sparta.miniproject1.user.dto.*;
 
-import com.sparta.miniproject1.user.dto.LoginRequestDto;
-import com.sparta.miniproject1.user.dto.SignupRequestDto;
 import com.sparta.miniproject1.user.entity.User;
 import com.sparta.miniproject1.user.entity.UserRoleEnum;
 import com.sparta.miniproject1.user.jwt.JwtUtil;
@@ -42,7 +39,7 @@ public class UserService {
 
 
     @Transactional
-    public void signup(SignupRequestDto signupRequestDto) {
+    public ResponseDto signup(SignupRequestDto signupRequestDto) {
         //이름, 비밀번호 대조를 위해 값을 뽑아놓음
         String username = signupRequestDto.getUsername();
 
@@ -86,11 +83,12 @@ public class UserService {
         //등록등록
         User user = new User(username, password, role);
         userRepository.save(user);
+        return new ResponseDto("가입 완료");
     }
 
 
     @Transactional(readOnly = true)
-    public void login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
+    public ResponseDto login(LoginRequestDto loginRequestDto, HttpServletResponse response) {
         //이름, 비밀번호 대조를 위해 값을 뽑아놓음
         String username = loginRequestDto.getUsername();
         String password = loginRequestDto.getPassword();
@@ -108,6 +106,7 @@ public class UserService {
         }
         //토큰을 생성해서 유저에게 줌
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername(), user.getRole()));
+        return new ResponseDto("로그인 완료");
     }
 
     @Transactional

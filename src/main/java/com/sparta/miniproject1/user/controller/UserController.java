@@ -3,6 +3,7 @@ package com.sparta.miniproject1.user.controller;
 import com.sparta.miniproject1.user.dto.ChangePasswordRequestDto;
 
 import com.sparta.miniproject1.user.dto.LoginRequestDto;
+import com.sparta.miniproject1.user.dto.ResponseDto;
 import com.sparta.miniproject1.user.dto.SignupRequestDto;
 import com.sparta.miniproject1.user.security.UserDetailsImpl;
 import com.sparta.miniproject1.user.service.UserService;
@@ -36,14 +37,13 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public String signup(@RequestBody SignupRequestDto signupRequestDto) {
-        userService.signup(signupRequestDto);
-        return "가입 완료";
+    public ResponseDto signup(@RequestBody SignupRequestDto signupRequestDto) {
+        return userService.signup(signupRequestDto);
+
     }
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
-        userService.login(loginRequestDto, response);
-        return "로그인 완료";
+    public ResponseDto login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
+        return userService.login(loginRequestDto, response);
     }
     // 로그인 한 유저가 메인페이지를 요청할 때 유저의 이름 반환
     @GetMapping("/info")
