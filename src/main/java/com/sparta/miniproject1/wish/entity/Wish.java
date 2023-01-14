@@ -15,6 +15,9 @@ public class Wish {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
+    private Boolean state;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -22,4 +25,18 @@ public class Wish {
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
+
+    public Wish(User user, Post post) {
+        this.user = user;
+        this.post = post;
+        this.state = true;
+    }
+
+    public void changeState() {
+        if(this.state == true) {
+            this.state = false;
+        }else {
+            this.state = true;
+        }
+    }
 }

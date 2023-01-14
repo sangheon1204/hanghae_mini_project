@@ -61,4 +61,12 @@ public class PostController {
     public ResponseDto deletePost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return postService.deletePost(id,userDetails.getUser());
     }
+
+    //상품 찜하기 기능
+    @ApiOperation(value = "게시물 찜", notes = "게시물을 찜하고 취소할 수 있다.")
+    @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
+    @PatchMapping("/posts/like/{id}")
+    public ResponseDto wishPost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return postService.likePost(id,userDetails.getUser());
+    }
 }

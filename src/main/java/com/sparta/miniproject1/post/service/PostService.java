@@ -13,6 +13,8 @@ import com.sparta.miniproject1.post.repository.PostRepository;
 import com.sparta.miniproject1.post.dto.ReplyDto;
 import com.sparta.miniproject1.user.entity.User;
 import com.sparta.miniproject1.user.entity.UserRoleEnum;
+import com.sparta.miniproject1.wish.entity.Wish;
+import com.sparta.miniproject1.wish.repository.WishRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
+    private final WishRepository wishRepository;
 
     //게시글 작성하기
     @Transactional
@@ -88,6 +91,23 @@ public class PostService {
         //게시물 삭제
         postRepository.delete(post);
         return new ResponseDto("삭제 완료.");
+    }
+
+    //게시물 찜하기/ 찜 취소하기
+    public ResponseDto likePost(Long id, User user) {
+        // id로 게시글 찾기
+        Post post = findPostByid(id);
+        // 유저가 찜했는지 여부 확인
+        Wish wish =wishRepository.findByUserAndPost(user,post);
+        if(wish!= null) {
+            //이미 찜을 한 경우
+            //찜 취소하면서 저장된 객체 삭제
+            wish.changeState();
+            return new ResponseDto("찜하기 취소");
+        }
+        Wish newWish = new Wish(user, post);
+        wishRepository.save(newWish);
+        return new ResponseDto("찜하기");
     }
 
     public Post findPostByid(Long id, User user){

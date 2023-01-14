@@ -34,9 +34,6 @@ public class Post {
     @Column
     private String description;
 
-    //상품 찜 상태
-    @Column
-    private char state;
 
     //게시글을 작성한 유저
     @ManyToOne
@@ -57,7 +54,6 @@ public class Post {
         this.imageUrl = postRequestDto.getImage_url();
         this.price = postRequestDto.getPrice();
         this.description = postRequestDto.getDescription();
-        this.state = 'N';
         this.user = user;
     }
 
