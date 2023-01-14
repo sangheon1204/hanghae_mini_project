@@ -2,6 +2,7 @@ package com.sparta.miniproject1.comment.entity;
 
 import com.sparta.miniproject1.post.entity.Post;
 import com.sparta.miniproject1.reply.entity.Reply;
+import com.sparta.miniproject1.timestamped.Timestamped;
 import com.sparta.miniproject1.user.entity.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,7 @@ import java.util.List;
 @Getter
 @Entity
 @NoArgsConstructor
-public class Comment{
+public class Comment extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
