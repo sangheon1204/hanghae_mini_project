@@ -48,14 +48,14 @@ public class WebSecurityConfig {
 
         http.authorizeRequests().antMatchers("/api/user/**").permitAll()
                 .antMatchers("/posts/**").permitAll()
+                .antMatchers("/swagger-ui.html").permitAll()
+                .antMatchers("/swagger-resources/**").permitAll()
+                .antMatchers("/v2/api-docs").permitAll()
                 .anyRequest().authenticated()
                 // JWT 인증/인가를 사용하기 위한 설정
                 .and().addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
 
-        http.formLogin().loginPage("/api/user/login-page").permitAll();
-
-        http.exceptionHandling().accessDeniedPage("/api/user/forbidden");
 
         return http.build();
     }

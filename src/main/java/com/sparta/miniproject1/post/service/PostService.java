@@ -1,6 +1,7 @@
 package com.sparta.miniproject1.post.service;
 
 import com.sparta.miniproject1.post.Comments;
+import com.sparta.miniproject1.post.Replies;
 import com.sparta.miniproject1.post.dto.PageResponseDto;
 import com.sparta.miniproject1.post.dto.PostRequestDto;
 import com.sparta.miniproject1.post.dto.PostResponseDto;
@@ -51,6 +52,8 @@ public class PostService {
         Post post = postRepository.findById(id).orElseThrow(
                 ()-> new IllegalArgumentException("해당 게시물은 존재하지 않습니다.")
         );
+        Comments comments = new Comments(post.getCommentList());
+        Replies replies = new Replies(commen)
         return new PostResponseDto(post,new Comments(post.getCommentList()));
     }
 }
