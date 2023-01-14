@@ -2,7 +2,6 @@ package com.sparta.miniproject1.exception;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.http.HttpStatus;
 
 @Getter
 @Setter

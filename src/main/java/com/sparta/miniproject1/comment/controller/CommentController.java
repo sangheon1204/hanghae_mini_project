@@ -8,25 +8,23 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-
 @RestController
 @RequiredArgsConstructor
 public class CommentController {
     private final CommentService commentService;
 
     @PostMapping("/comments")   //request 에 post 의 아이디가 들어있음
-    public ResponseMessageDto create(@RequestBody CommentRequestDto request, @AuthenticationPrincipal UserDetailsImpl userDetails, HttpServletResponse response) {
-        return commentService.create(request, userDetails.getUser(), response);
+    public ResponseMessageDto create(@RequestBody CommentRequestDto request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return commentService.create(request, userDetails.getUser());
     }
 
     @PatchMapping("/comments")    //request 에 comment 의 아이디가 들어있음
-    public ResponseMessageDto update(@RequestBody CommentRequestDto request, @AuthenticationPrincipal UserDetailsImpl userDetails, HttpServletResponse response) {
-        return commentService.update(request, userDetails.getUser(), response);
+    public ResponseMessageDto update(@RequestBody CommentRequestDto request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return commentService.update(request, userDetails.getUser());
     }
 
     @DeleteMapping("/comments")
-    public ResponseMessageDto delete(@RequestBody CommentRequestDto request, @AuthenticationPrincipal UserDetailsImpl userDetails, HttpServletResponse response) {
-        return commentService.delete(request, userDetails.getUser(), response);
+    public ResponseMessageDto delete(@RequestBody CommentRequestDto request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return commentService.delete(request, userDetails.getUser());
     }
 }
