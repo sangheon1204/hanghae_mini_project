@@ -1,5 +1,7 @@
 package com.sparta.miniproject1.post.service;
 
+import com.sparta.miniproject1.comment.dto.CommentDto;
+import com.sparta.miniproject1.comment.entity.Comment;
 import com.sparta.miniproject1.post.Comments;
 import com.sparta.miniproject1.post.Replies;
 import com.sparta.miniproject1.post.dto.PageResponseDto;
@@ -8,6 +10,7 @@ import com.sparta.miniproject1.post.dto.PostResponseDto;
 import com.sparta.miniproject1.post.dto.ResponseDto;
 import com.sparta.miniproject1.post.entity.Post;
 import com.sparta.miniproject1.post.repository.PostRepository;
+import com.sparta.miniproject1.post.dto.ReplyDto;
 import com.sparta.miniproject1.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,6 +19,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -52,8 +59,14 @@ public class PostService {
         Post post = postRepository.findById(id).orElseThrow(
                 ()-> new IllegalArgumentException("해당 게시물은 존재하지 않습니다.")
         );
+        //게시글에 딸린 댓글 리스트를 가지고 있는 객체 생성
         Comments comments = new Comments(post.getCommentList());
-        Replies replies = new Replies(commen)
-        return new PostResponseDto(post,new Comments(post.getCommentList()));
+        List<CommentDto> commentDtoList = new ArrayList<>();
+        for(Comment comment : comments.getComments()) {
+            Replies replies = new Replies(comment.getReplyList());
+            List<ReplyDto> replyDtoList = replies.getReplies().stream().map(ReplyDto :: new).collect(Collectors.toList());
+            commentDtoList.add(new CommentDto(comment.getId(),comment.getComment(),replyDtoList));
+        }
+        return new PostResponseDto(post,commentDtoList);
     }
 }
