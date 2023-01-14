@@ -50,12 +50,10 @@ public class UserController {
     public String getUserName(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userDetails.getUsername();
     }
-    //비밀번호 변경....이건 회의하고 넣을지 말지 결정하자.
+    //비밀번호 변경
     @PutMapping("/changepw/{id}")
-    public String changePassword(@PathVariable Long id, @RequestBody ChangePasswordRequestDto changePasswordRequestDto, HttpServletRequest request) {
-        userService.updatePassword(id, changePasswordRequestDto, request);
-        // 응답 보내기 (업데이트된 상품 id)
-        return "변경 완료";
+    public ResponseDto changePassword(@PathVariable Long id, @RequestBody ChangePasswordRequestDto changePasswordRequestDto,  HttpServletRequest request) {
+        return userService.changePassword(id,changePasswordRequestDto, request);
     }
 
     @GetMapping("/forbidden")
