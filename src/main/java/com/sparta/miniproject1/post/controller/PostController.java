@@ -45,4 +45,20 @@ public class PostController {
     public PostResponseDto getPost(@PathVariable Long id) {
         return postService.getPost(id);
     }
+
+    //id로 게시글 업데이트
+    @ApiOperation(value = "게시글 수정", notes = "게시글을 게시글의 id로 찾아 수정한다.")
+    @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
+    @PatchMapping("/posts/{id}")
+    public ResponseDto updatePost(@PathVariable Long id, @RequestBody PostRequestDto request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return postService.updatePost(id,request,userDetails.getUser());
+    }
+
+    //id로 게시물 삭제
+    @ApiOperation(value = "게시글 삭제", notes = "게시글을 게시글의 id로 찾아 삭제한다.")
+    @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
+    @DeleteMapping("/posts/{id}")
+    public ResponseDto deletePost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return postService.deletePost(id,userDetails.getUser());
+    }
 }

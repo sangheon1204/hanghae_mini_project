@@ -60,4 +60,23 @@ public class Post {
         this.state = 'N';
         this.user = user;
     }
+
+    public void update(PostRequestDto request) {
+        if(request.getName() != null) {
+            this.name = request.getName();
+        }
+        if(request.getDescription() != null) {
+            this.description = request.getDescription();
+        }
+        if(request.getPrice() != 0) {
+            this.price = request.getPrice();
+        }
+        if(request.getCategory() != null) {
+            this.category = request.getCategory();
+        }
+        if(request.getImage_url() != null) {
+            this.imageUrl = request.getImage_url();
+        }
+
+    }
 }
