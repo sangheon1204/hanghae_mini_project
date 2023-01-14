@@ -145,11 +145,14 @@ public class UserService {
         } else {
             throw new IllegalArgumentException("Token Error");
         }
-        // 해당 사용자 찾기
-        User user =  userRepository.findById(id).orElseThrow(
+        // 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
+        User userr =  userRepository.findByUsername(claims.getSubject()).orElseThrow(
                 () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
         );
-            userRepository.deleteById(id);
+        if(userr.getId()!=id){ //대리 삭제 방지
+            return new ResponseDto("다른 아이디 삭제는 안됩니다.");
+        }
+        userRepository.deleteById(id);
         return new ResponseDto("아이디 삭제 완료");
 
     }
