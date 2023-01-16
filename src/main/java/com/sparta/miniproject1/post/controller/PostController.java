@@ -29,8 +29,8 @@ public class PostController {
     @ApiOperation(value = "게시글 추가(상품등록)", notes = "게시글 목록에 상품을 등록한다.")
     @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
     @PostMapping("/posts")
-    public ResponseDto createPost(@RequestPart(required = false, value = "file") MultipartFile multipartFile, @RequestPart(value = "post") PostRequestDto postRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
-        return postService.createPost(postRequestDto,multipartFile,userDetails.getUser());
+    public ResponseDto createPost(@RequestBody PostRequestDto postRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return postService.createPost(postRequestDto,userDetails.getUser());
     }
     //전체 목록 조회
     @ApiOperation(value = "게시글 목록 조회", notes = "등록된 게시글 목록 전체를 조회한다.")

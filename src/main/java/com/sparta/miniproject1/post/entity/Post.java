@@ -25,8 +25,8 @@ public class Post {
     @Column(nullable = false)
     private String category;
     //상품의 이미지 url
-    @Column(nullable = false)
-    private String imageUrl;
+    @Column
+    private String imageUrl="https://myminiprojectbucket.s3.ap-northeast-2.amazonaws.com/Server2020-03-03%20%282%29.1673840287136.png";
     //상품의 가격
     @Column(nullable = false)
     private int price;
@@ -48,10 +48,9 @@ public class Post {
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> commentList = new ArrayList<>();
 
-    public Post(PostRequestDto postRequestDto, User user, String imageUrl) {
+    public Post(PostRequestDto postRequestDto, User user) {
         this.name = postRequestDto.getName();
         this.category = postRequestDto.getCategory();
-        this.imageUrl = imageUrl;
         this.price = postRequestDto.getPrice();
         this.description = postRequestDto.getDescription();
         this.user = user;
