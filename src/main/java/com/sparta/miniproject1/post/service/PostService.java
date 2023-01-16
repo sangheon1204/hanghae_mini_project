@@ -42,30 +42,14 @@ import java.util.stream.Collectors;
 public class PostService {
     private final PostRepository postRepository;
     private final WishRepository wishRepository;
-    private final AmazonS3Client amazonS3Client;
 
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucketName;
 
 
     //게시글 작성하기
     @Transactional
-    public ResponseDto createPost(PostRequestDto postRequestDto, MultipartFile multipartFile, User user) throws IOException {
-        String imageUrl =null;
-        if(!multipartFile.isEmpty()) {
-            String fileName = CommonUtils.buildFileName(multipartFile.getOriginalFilename());
-            ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentType(multipartFile.getContentType());
-            byte[] bytes = IOUtils.toByteArray(multipartFile.getInputStream());
-            objectMetadata.setContentLength(bytes.length);
-            ByteArrayInputStream byteArrayIs = new ByteArrayInputStream(bytes);
-
-            amazonS3Client.putObject(new PutObjectRequest(bucketName,fileName,byteArrayIs,objectMetadata)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
-            imageUrl = amazonS3Client.getUrl(bucketName,fileName).toString();
-        }
+    public ResponseDto createPost(PostRequestDto postRequestDto, User user)  {
         // 게시글 객체 생성
-        Post post = new Post(postRequestDto, user, imageUrl);
+        Post post = new Post(postRequestDto, user);
         //게시글 객체 db에 저장
         postRepository.save(post);
         //msg: 게시글 작성완료! 반환
