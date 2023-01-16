@@ -48,10 +48,10 @@ public class Post {
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> commentList = new ArrayList<>();
 
-    public Post(PostRequestDto postRequestDto, User user) {
+    public Post(PostRequestDto postRequestDto, User user, String imageUrl) {
         this.name = postRequestDto.getName();
         this.category = postRequestDto.getCategory();
-        this.imageUrl = postRequestDto.getImage_url();
+        this.imageUrl = imageUrl;
         this.price = postRequestDto.getPrice();
         this.description = postRequestDto.getDescription();
         this.user = user;
@@ -69,9 +69,6 @@ public class Post {
         }
         if(request.getCategory() != null) {
             this.category = request.getCategory();
-        }
-        if(request.getImage_url() != null) {
-            this.imageUrl = request.getImage_url();
         }
 
     }

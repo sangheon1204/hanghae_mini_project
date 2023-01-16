@@ -11,6 +11,5 @@ public class PostRequestDto {
     private String description;
     private int price;
     private String category;
-    private String image_url;
 
 }

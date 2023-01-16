@@ -1,5 +1,10 @@
 package com.sparta.miniproject1.post.service;
 
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.util.IOUtils;
 import com.sparta.miniproject1.comment.dto.CommentDto;
 import com.sparta.miniproject1.comment.entity.Comment;
 import com.sparta.miniproject1.post.Comments;
@@ -11,18 +16,23 @@ import com.sparta.miniproject1.post.dto.ResponseDto;
 import com.sparta.miniproject1.post.entity.Post;
 import com.sparta.miniproject1.post.repository.PostRepository;
 import com.sparta.miniproject1.post.dto.ReplyDto;
+import com.sparta.miniproject1.s3.CommonUtils;
 import com.sparta.miniproject1.user.entity.User;
 import com.sparta.miniproject1.user.entity.UserRoleEnum;
 import com.sparta.miniproject1.wish.entity.Wish;
 import com.sparta.miniproject1.wish.repository.WishRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,12 +42,30 @@ import java.util.stream.Collectors;
 public class PostService {
     private final PostRepository postRepository;
     private final WishRepository wishRepository;
+    private final AmazonS3Client amazonS3Client;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucketName;
+
 
     //게시글 작성하기
     @Transactional
-    public ResponseDto createPost(PostRequestDto postRequestDto, User user) {
+    public ResponseDto createPost(PostRequestDto postRequestDto, MultipartFile multipartFile, User user) throws IOException {
+        String imageUrl =null;
+        if(!multipartFile.isEmpty()) {
+            String fileName = CommonUtils.buildFileName(multipartFile.getOriginalFilename());
+            ObjectMetadata objectMetadata = new ObjectMetadata();
+            objectMetadata.setContentType(multipartFile.getContentType());
+            byte[] bytes = IOUtils.toByteArray(multipartFile.getInputStream());
+            objectMetadata.setContentLength(bytes.length);
+            ByteArrayInputStream byteArrayIs = new ByteArrayInputStream(bytes);
+
+            amazonS3Client.putObject(new PutObjectRequest(bucketName,fileName,byteArrayIs,objectMetadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+            imageUrl = amazonS3Client.getUrl(bucketName,fileName).toString();
+        }
         // 게시글 객체 생성
-        Post post = new Post(postRequestDto, user);
+        Post post = new Post(postRequestDto, user, imageUrl);
         //게시글 객체 db에 저장
         postRepository.save(post);
         //msg: 게시글 작성완료! 반환
