@@ -10,12 +10,13 @@ import com.sparta.miniproject1.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,35 +27,33 @@ import javax.servlet.http.HttpServletResponse;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    @GetMapping("/signup")
-    public ModelAndView signupPage() {
-        return new ModelAndView("signup");
-    }
 
-    @GetMapping("/login")
-    public ModelAndView loginPage() {
-        return new ModelAndView("login");
-    }
-
+    @ApiOperation(value = "회원가입", notes = "유저 하나를 추가한다.")
+    @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
     @PostMapping("/signup")
     public ResponseDto signup(@RequestBody SignupRequestDto signupRequestDto) {
         return userService.signup(signupRequestDto);
 
     }
+    @ApiOperation(value = "로그인", notes = "입력받은 정보를 기반으로 로그인 작업을 수행한다.")
+    @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
     @PostMapping("/login")
     public ResponseDto login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
         return userService.login(loginRequestDto, response);
     }
-    // 로그인 한 유저가 메인페이지를 요청할 때 유저의 이름 반환
+    @ApiOperation(value = "로그인 유저 이름 반환", notes = "로그인 한 유저가 메인페이지를 요청할 때 유저의 이름 반환한다.")
     @GetMapping("/info")
-    public String getUserName(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return userDetails.getUsername();
+    public ResponseDto getUserName(HttpServletRequest request) {
+        return userService.getUserName(request);
     }
-    //비밀번호 변경
+    @ApiOperation(value = "비밀번호 변경", notes = "사용자의 비밀번호를 변경한다.")
+    @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
     @PutMapping("/changepw/{id}")
     public ResponseDto changePassword(@PathVariable Long id, @RequestBody ChangePasswordRequestDto changePasswordRequestDto,  HttpServletRequest request) {
         return userService.changePassword(id,changePasswordRequestDto, request);
     }
+    @ApiOperation(value = "계정 삭제", notes = "유저를 삭제한다.(자신 한정)")
+    @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
     @DeleteMapping("/delete/{id}")
     public ResponseDto deleteBoard(@PathVariable Long id, HttpServletRequest request) {
         return userService.deleteId(id, request);
