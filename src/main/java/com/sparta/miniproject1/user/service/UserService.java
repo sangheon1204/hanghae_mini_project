@@ -107,23 +107,6 @@ public class UserService {
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername(), user.getRole()));
         return new ResponseDto("로그인 완료");
     }
-    @Transactional
-    public ResponseDto getUserName(HttpServletRequest request) {
-        String token = jwtUtil.resolveToken(request);
-        Claims claims;
-        if (jwtUtil.validateToken(token)) {
-        } else {
-            throw new IllegalArgumentException("Token Error");
-        }
-        // 토큰에서 사용자 정보 가져오기
-        claims = jwtUtil.getUserInfoFromToken(token);
-        // 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
-        User user =  userRepository.findByUsername(claims.getSubject()).orElseThrow(
-                () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
-        );
-        return new ResponseDto(user.getUsername());
-    }
-
 
     @Transactional
     public ResponseDto changePassword(Long id, ChangePasswordRequestDto changePasswordRequestDto, HttpServletRequest request) {

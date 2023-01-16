@@ -43,8 +43,8 @@ public class UserController {
     }
     @ApiOperation(value = "로그인 유저 이름 반환", notes = "로그인 한 유저가 메인페이지를 요청할 때 유저의 이름 반환한다.")
     @GetMapping("/info")
-    public ResponseDto getUserName(HttpServletRequest request) {
-        return userService.getUserName(request);
+    public String getUserName(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userDetails.getUsername();
     }
     @ApiOperation(value = "비밀번호 변경", notes = "사용자의 비밀번호를 변경한다.")
     @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
