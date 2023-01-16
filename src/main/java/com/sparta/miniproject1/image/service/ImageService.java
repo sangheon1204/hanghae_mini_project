@@ -14,6 +14,7 @@ import com.sparta.miniproject1.post.repository.PostRepository;
 import com.sparta.miniproject1.s3.CommonUtils;
 import com.sparta.miniproject1.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,22 +25,25 @@ import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ImageService {
 
     private final AmazonS3Client amazonS3Client;
     private final PostImageRepository postImageRepository;
-
     private final ProfileImageRepository profileImageRepository;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
     private final PostRepository postRepository;
 
-    //상품의 이미지 파일 업로드
     @Transactional
+    //상품의 이미지 파일 업로드
     public ImageResponseDto uploadFile(Long id, MultipartFile multipartFile, User user) throws IOException {
-        String imageUrl = null;
-
+        String imageUrl;
+        log.info(multipartFile.getName());
+        Post post = postRepository.findById(id).orElseThrow(
+                ()-> new IllegalArgumentException("해당 게시글은 존재하지 않습니다.")
+        );
         //s3에 저장하고 이미지 url 받아오기
         if (!multipartFile.isEmpty()) {
             String fileName = CommonUtils.buildFileName(multipartFile.getOriginalFilename());
@@ -50,13 +54,10 @@ public class ImageService {
             objectMetadata.setContentLength(bytes.length);
             ByteArrayInputStream byteArrayIs = new ByteArrayInputStream(bytes);
 
+            //s3에 저장
             amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, byteArrayIs, objectMetadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
             imageUrl = amazonS3Client.getUrl(bucketName, fileName).toString();
-            // 해당 게시글 찾기
-            Post post = postRepository.findById(id).orElseThrow(
-                    ()-> new IllegalArgumentException("해당 게시글은 존재하지 않습니다.")
-            );
             //객체 저장
             PostImage postImage = new PostImage(imageUrl,user,post);
             postImageRepository.save(postImage);

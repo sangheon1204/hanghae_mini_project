@@ -3,7 +3,6 @@ package com.sparta.miniproject1.image.dto;
 import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.*;
 
 @Getter
 public class ImageResponseDto {

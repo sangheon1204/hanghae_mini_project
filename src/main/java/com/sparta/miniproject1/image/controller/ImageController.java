@@ -7,15 +7,17 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
-@Api(tags = "file")
+@Api(tags = "image")
 @RequiredArgsConstructor
 @RestController
+@Slf4j
 public class ImageController {
 
     private final ImageService imageService;
@@ -24,7 +26,9 @@ public class ImageController {
     @ApiOperation(value = "이미지 파일 업로드", notes = "이미지 파일을 업로드한다.")
     @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
     @PostMapping("/images/{id}")
-    public ImageResponseDto uploadFile(@PathVariable Long id, @RequestParam("image")MultipartFile multipartFile, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+    public ImageResponseDto uploadFile(@PathVariable Long id, @RequestPart(value = "file") MultipartFile multipartFile, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+        log.info(multipartFile.getOriginalFilename());
+        log.info(multipartFile.getName());
         return imageService.uploadFile(id, multipartFile, userDetails.getUser());
     }
 
