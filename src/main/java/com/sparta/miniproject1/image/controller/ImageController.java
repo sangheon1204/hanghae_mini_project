@@ -21,19 +21,20 @@ public class ImageController {
 
     private final ImageService imageService;
 
-    //이미지 파일 업로드(상품)
-    @ApiOperation(value = "이미지 파일 업로드", notes = "이미지 파일을 업로드한다.")
-    @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
-    @PostMapping("/files/{id}")
-    public ImageResponseDto uploadFile(@PathVariable Long id,@RequestParam(value = "file") MultipartFile multipartFile, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
-        return imageService.uploadFile(id, multipartFile, userDetails.getUser());
+    //프로필 사진 업로드
+    @ApiOperation(value = "프로필 업로드", notes = "프로필 이미지를 s3에 저장한다.")
+    @PostMapping("/files/profile")
+    public ImageResponseDto uploadProfile(@RequestParam(value = "file") MultipartFile multipartFile) throws IOException {
+        log.info(multipartFile.getName());
+        return imageService.uploadFile(multipartFile);
     }
 
-    //프로필 이미지 업로드
-    @ApiOperation(value = "프로필 사진 업로드", notes = "프로필 사진을 업로드합니다.")
+    //상품 이미지 업로드
+    //로그인 상태로 하는 것이기 때문에 인증 인가 필요
+    @ApiOperation(value = "상품 이미지 업로드", notes = "상품 이미지를 s3에 저장한다.")
     @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
-    @PostMapping("/profiles")
-    public ImageResponseDto uploadProfile(@RequestParam("profile") MultipartFile multipartFile,@AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException{
-        return imageService.uploadProfile(multipartFile, userDetails.getUser());
+    @PostMapping("/files/image")
+    public ImageResponseDto uploadImage(@RequestParam(value= "file") MultipartFile multipartFile) throws IOException {
+        return imageService.uploadFile(multipartFile);
     }
 }
