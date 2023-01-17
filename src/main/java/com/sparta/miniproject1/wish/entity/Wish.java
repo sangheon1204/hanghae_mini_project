@@ -15,18 +15,19 @@ public class Wish {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    Post post;
+
     @Column
     private Boolean state;
 
     @Column
     private Long userId;
 
-    @Column
-    private Long postId;
-
     public Wish(User user, Post post) {
         this.userId = user.getId();
-        this.postId = post.getId();
+        this.post = post;
         this.state = true;
     }
 

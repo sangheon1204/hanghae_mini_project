@@ -50,7 +50,7 @@ public class ReplyService {
                 () -> new IllegalArgumentException("해당 아이디의 대댓글이 존재하지 않습니다.")
         );
 
-        if (!(reply.getUserId().equals(user.getId()) || user.getRole().equals(UserRoleEnum.ADMIN))) {     //admin 이면 삭제 가능
+        if (!reply.getUserId().equals(user.getId())) {     //admin 이면 삭제 가능
             throw new IllegalArgumentException("본인이 작성한 댓글만 삭제 가능합니다!");
         }
 
