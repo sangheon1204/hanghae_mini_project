@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
 import com.sparta.miniproject1.image.dto.ImageResponseDto;
 import com.sparta.miniproject1.image.entity.PostImage;
+import com.sparta.miniproject1.image.entity.ProfileImage;
 import com.sparta.miniproject1.image.repository.PostImageRepository;
 import com.sparta.miniproject1.image.repository.ProfileImageRepository;
 import com.sparta.miniproject1.post.entity.Post;
@@ -30,11 +31,12 @@ public class ImageService {
 
     private final AmazonS3Client amazonS3Client;
     private final PostImageRepository postImageRepository;
+    private final PostRepository postRepository;
     private final ProfileImageRepository profileImageRepository;
+
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
-    private final PostRepository postRepository;
 
     @Transactional
     //상품의 이미지 파일 업로드
@@ -65,9 +67,30 @@ public class ImageService {
         }
         return null;
     }
-    //회원의 프로필 사진 업로드
-//    @Transactional
-//    public ImageResponseDto uploadProfile(MultipartFile multipartFile) {
-//        return new ImageResponseDto();
-//    }
+    //회원 프로필 사진 업로드
+    @Transactional
+    public ImageResponseDto uploadProfile(MultipartFile multipartFile, User user) throws IOException {
+        String imageUrl;
+        log.info(multipartFile.getName());
+        //s3에 저장하고 이미지 url 받아오기
+        if (!multipartFile.isEmpty()) {
+            String fileName = CommonUtils.buildFileName(multipartFile.getOriginalFilename());
+            ObjectMetadata objectMetadata = new ObjectMetadata();
+            objectMetadata.setContentType(multipartFile.getContentType());
+
+            byte[] bytes = IOUtils.toByteArray(multipartFile.getInputStream());
+            objectMetadata.setContentLength(bytes.length);
+            ByteArrayInputStream byteArrayIs = new ByteArrayInputStream(bytes);
+
+            //s3에 저장
+            amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, byteArrayIs, objectMetadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+            imageUrl = amazonS3Client.getUrl(bucketName, fileName).toString();
+            //객체 저장
+            ProfileImage profileImage = new ProfileImage(imageUrl,user);
+            profileImageRepository.save(profileImage);
+            return new ImageResponseDto(multipartFile,imageUrl);
+        }
+        return null;
+    }
 }

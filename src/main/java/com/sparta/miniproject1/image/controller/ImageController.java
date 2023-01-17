@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 
 @Api(tags = "image")
@@ -25,17 +24,16 @@ public class ImageController {
     //이미지 파일 업로드(상품)
     @ApiOperation(value = "이미지 파일 업로드", notes = "이미지 파일을 업로드한다.")
     @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
-    @PostMapping("/images/{id}")
-    public ImageResponseDto uploadFile(@PathVariable Long id, @RequestPart(value = "file") MultipartFile multipartFile, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
-        log.info(multipartFile.getOriginalFilename());
-        log.info(multipartFile.getName());
+    @PostMapping("/files/{id}")
+    public ImageResponseDto uploadFile(@PathVariable Long id,@RequestParam(value = "file") MultipartFile multipartFile, @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         return imageService.uploadFile(id, multipartFile, userDetails.getUser());
     }
 
-//    //프로필 이미지 업로드
-//    @ApiOperation(value = "프로필 사진 업로드", notes = "프로필 사진을 업로드합니다.")
-//    @PostMapping("/api/user/profile")
-//    public ImageResponseDto uploadProfile(@RequestParam("profile") MultipartFile multipartFile) {
-//        return imageService.uploadProfile(multipartFile);
-//    }
+    //프로필 이미지 업로드
+    @ApiOperation(value = "프로필 사진 업로드", notes = "프로필 사진을 업로드합니다.")
+    @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
+    @PostMapping("/profiles")
+    public ImageResponseDto uploadProfile(@RequestParam("profile") MultipartFile multipartFile,@AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException{
+        return imageService.uploadProfile(multipartFile, userDetails.getUser());
+    }
 }

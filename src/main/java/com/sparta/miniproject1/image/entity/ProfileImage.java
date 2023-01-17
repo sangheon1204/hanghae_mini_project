@@ -20,4 +20,9 @@ public class ProfileImage {
     @ManyToOne
     @JoinColumn
     private User user;
+
+    public ProfileImage(String imageUrl, User user) {
+        this.imageUrl = imageUrl;
+        this.user = user;
+    }
 }

@@ -24,9 +24,6 @@ public class Post {
     //카테고리
     @Column(nullable = false)
     private String category;
-//    //상품의 이미지 url
-//    @Column
-//    private String imageUrl="https://myminiprojectbucket.s3.ap-northeast-2.amazonaws.com/Server2020-03-03%20%282%29.1673840287136.png";
     //상품의 가격
     @Column(nullable = false)
     private int price;

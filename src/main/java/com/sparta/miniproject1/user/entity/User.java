@@ -20,7 +20,7 @@ public class User {
     @Column(nullable = false)
     private String username;
     @Column(nullable = false)
-        private String password;
+    private String password;
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
     //올려둔 품목 리스트
