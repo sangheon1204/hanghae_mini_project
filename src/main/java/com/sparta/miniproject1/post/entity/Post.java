@@ -2,6 +2,7 @@ package com.sparta.miniproject1.post.entity;
 
 import com.sparta.miniproject1.comment.entity.Comment;
 import com.sparta.miniproject1.post.dto.PostRequestDto;
+import com.sparta.miniproject1.timestamped.Timestamped;
 import com.sparta.miniproject1.user.entity.User;
 import com.sparta.miniproject1.wish.entity.Wish;
 import lombok.Getter;
@@ -14,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Entity
-public class Post {
+public class Post extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
