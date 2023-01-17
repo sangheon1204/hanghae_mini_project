@@ -1,11 +1,8 @@
 package com.sparta.miniproject1.user.service;
 
-
-
 import com.sparta.miniproject1.user.dto.*;
 
 import com.sparta.miniproject1.user.entity.User;
-import com.sparta.miniproject1.user.entity.UserRoleEnum;
 import com.sparta.miniproject1.user.jwt.JwtUtil;
 import com.sparta.miniproject1.user.repository.UserRepository;
 
@@ -22,7 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Optional;
 import java.util.regex.Pattern;
-
 
 @Slf4j
 @Service
@@ -59,28 +55,18 @@ public class UserService {
         if (!pwcheck.matches(passwordCheck)) {
             throw new IllegalArgumentException(
                     "비밀번호 입력을 다시 확인해주세요.");
-
         }
         // 회원 중복 확인
         Optional<User> found = userRepository.findByUsername(username);
         if (found.isPresent()) {
             throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
         }
-        //역할군 지정 위해서 role 변수 만듦 + 초기값은 USER로
-        UserRoleEnum role = UserRoleEnum.USER;
-        //토큰 확인!
-        if (signupRequestDto.isAdmin()) {
-            if (!signupRequestDto.getAdminToken().equals(ADMIN_TOKEN)) {
-                throw new IllegalArgumentException("관리자 암호가 틀려 등록이 불가능합니다.");
-            }
-            role = UserRoleEnum.ADMIN;
-        }
 
         //저장을 바로 하면 안되고 encoding해서 저장하기
         String password = passwordEncoder.encode(pwcheck);
 
         //등록등록
-        User user = new User(username, password, role);
+        User user = new User(signupRequestDto, password);
         userRepository.save(user);
         return new ResponseDto("가입 완료");
     }
@@ -96,12 +82,9 @@ public class UserService {
         User user = userRepository.findByUsername(username).orElseThrow(
                 () -> new IllegalArgumentException("등록된 사용자가 없습니다.")
         );
-
         // 비밀번호 확인
-
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-
         }
         //토큰을 생성해서 유저에게 줌
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername(), user.getRole()));
