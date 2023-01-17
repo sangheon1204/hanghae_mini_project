@@ -17,8 +17,9 @@ public class Reply extends Timestamped {
     @Column
     Long id;
 
-    @Column
-    Long commentId;
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    Comment comment;
 
     @Column
     Long userId;
@@ -27,7 +28,7 @@ public class Reply extends Timestamped {
     String reply;
 
     public Reply(Comment comment, User user, String reply) {
-        this.commentId = comment.getId();
+        this.comment = comment;
         this.userId = user.getId();
         this.reply = reply;
     }

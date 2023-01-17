@@ -105,17 +105,9 @@ public class PostService {
     public ResponseDto deletePost(Long id, User user) {
         //id로 게시물 찾기
         Post post = findPostByid(id,user);
-        List<Comment> commentList = commentRepository.findALlByPostId(post.getId());
         //대댓글 삭제
-        for(Comment comment: commentList) {
-            List<Reply> replyList = replyRepository.findALlByCommentId(comment.getId());
-            replyRepository.deleteAll(replyList);
-        }
         //댓글 삭제
-        commentRepository.deleteAll(commentList);
-        List<Wish> wishList = wishRepository.findAllByPostId(post.getId());
         //찜 삭제
-        wishRepository.deleteAll(wishList);
         //게시글 삭제
         postRepository.delete(post);
         return new ResponseDto("삭제 완료.");
