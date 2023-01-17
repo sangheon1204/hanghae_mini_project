@@ -55,12 +55,9 @@ public class CommentService {
                 () -> new IllegalArgumentException("해당 아이디의 댓글이 존재하지 않습니다.")
         );
 
-        if(!(comment.getUserId().equals(user.getId()) || user.getRole().equals(UserRoleEnum.ADMIN))) {    //admin 이면 삭제 가능
+        if(!comment.getUserId().equals(user.getId())) {    //admin 이면 삭제 가능
             throw new IllegalArgumentException("본인이 작성한 댓글만 삭제 가능합니다!");
         }
-        List<Reply> replyList = replyRepository.findALlByCommentId(comment.getId());
-        //대댓글 삭제
-        replyRepository.deleteAll(replyList);
         commentRepository.deleteById(request.getId());
         return new ResponseMessageDto("삭제 성공!");
     }

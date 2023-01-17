@@ -35,6 +35,13 @@ public class Post {
     @Column
     private Long userId;
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    List<Wish> wishList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    List<Comment> commentList = new ArrayList<>();
+
+
     public Post(PostRequestDto postRequestDto, User user) {
         this.name = postRequestDto.getName();
         this.category = postRequestDto.getCategory();
