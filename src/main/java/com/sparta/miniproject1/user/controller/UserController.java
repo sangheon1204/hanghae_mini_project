@@ -40,9 +40,13 @@ public class UserController {
     @ApiOperation(value = "카카오 로그인", notes = "입력받은 정보를 기반으로 로그인 작업을 수행한다.")
     @GetMapping("/kakao/callback")    //카카오 로그인
     public String kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+        log.info("나와라");
+        log.info(code);
+
         // code: 카카오 서버로부터 받은 인가 코드
         String createToken = kakaoService.kakaoLogin(code, response);
 
+        log.info("토큰: "+createToken);
         // Cookie 생성 및 직접 브라우저에 Set
         Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, createToken.substring(7));
         cookie.setPath("/");

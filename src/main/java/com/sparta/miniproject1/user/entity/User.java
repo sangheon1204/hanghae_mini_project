@@ -16,7 +16,7 @@ public class User {
     private String username;
     @Column(nullable = false)
     private String nickname;
-    @Column(nullable = false)
+    @Column
     private Long kakaoId;
     @Column(nullable = false)
     private String password;
@@ -33,11 +33,11 @@ public class User {
         this.password = password;
         this.imgurl = signupRequestDto.getImageResponseDto().getUrl();
     }
-    public User(String username, Long kakaoId, String password, UserRoleEnum role) {
+    public User(String username, Long kakaoId, String password) {
         this.username = username;
+        this.nickname = username;
         this.kakaoId = kakaoId;
         this.password = password;
-        this.role = role;
     }
     public User kakaoIdUpdate(Long kakaoId) {
         this.kakaoId = kakaoId;

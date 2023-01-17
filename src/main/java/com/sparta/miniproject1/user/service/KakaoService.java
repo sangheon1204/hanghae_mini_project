@@ -33,15 +33,16 @@ public class KakaoService {
     private final JwtUtil jwtUtil;
 
     public String kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
+//       log.info("1단계 진입");
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getToken(code);
-
+//        log.info("2단계 진입");
         // 2. 토큰으로 카카오 API 호출 : "액세스 토큰"으로 "카카오 사용자 정보" 가져오기
         KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
-
+        log.info("3단계 진입");
         // 3. 필요시에 회원가입
         User kakaoUser = registerKakaoUserIfNeeded(kakaoUserInfo);
-
+        log.info("4단계 진입");
         // 4. JWT 토큰 반환
         String createToken =  jwtUtil.createToken(kakaoUser.getUsername(), kakaoUser.getRole());
 //        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, createToken);
@@ -84,7 +85,7 @@ public class KakaoService {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + accessToken);
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
-
+//        log.info("Header 생성 완료");
         // HTTP 요청 보내기
         HttpEntity<MultiValueMap<String, String>> kakaoUserInfoRequest = new HttpEntity<>(headers);
         RestTemplate rt = new RestTemplate();
@@ -94,18 +95,18 @@ public class KakaoService {
                 kakaoUserInfoRequest,
                 String.class
         );
-
+//        log.info("Header 보내기 완료");
         String responseBody = response.getBody();
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(responseBody);
         Long id = jsonNode.get("id").asLong();
-        String nickname = jsonNode.get("properties")
+        String username = jsonNode.get("properties")
                 .get("nickname").asText();
-        String email = jsonNode.get("kakao_account")
-                .get("email").asText();
+        String nickname = username;
 
-        log.info("카카오 사용자 정보: " + id + ", " + nickname);
-        return new KakaoUserInfoDto(id, nickname);
+
+//        log.info("카카오 사용자 정보: " + id + ", " + username + ", "+nickname);
+        return new KakaoUserInfoDto(id, username, nickname);
     }
     // 3. 필요시에 회원가입
     private User registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
@@ -121,14 +122,15 @@ public class KakaoService {
         } else {
             // 신규 회원가입
             // password: random UUID
+
             String password = UUID.randomUUID().toString();
             String encodedPassword = passwordEncoder.encode(password);
-
-            kakaoUser = new User(kakaoUserInfo.getNicknmae(), kakaoId, encodedPassword, UserRoleEnum.USER);
+            log.info(kakaoUserInfo.getUsername()+", "+kakaoId+", "+encodedPassword);
+            kakaoUser = new User(kakaoUserInfo.getUsername(), kakaoId, encodedPassword);
         }
-
+            log.info("저장 가자!");
         userRepository.save(kakaoUser);
-
+            log.info("끄읏");
         return kakaoUser;
     }
 }
