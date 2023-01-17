@@ -26,15 +26,15 @@ public class CommentController {
 
     @ApiOperation(value = "댓글 수정", notes = "댓글을 댓글의 id로 찾아 수정한다.")
     @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
-    @PatchMapping("/comments")    //request 에 comment 의 아이디가 들어있음
-    public ResponseMessageDto update(@RequestBody CommentRequestDto request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return commentService.update(request, userDetails.getUser());
+    @PatchMapping("/comments/{id}")
+    public ResponseMessageDto update(@PathVariable Long id,@RequestBody CommentRequestDto request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return commentService.update(id, request, userDetails.getUser());
     }
 
     @ApiOperation(value = "댓글 삭제", notes = "댓글을 댓글의 id로 찾아 삭제한다.")
     @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
-    @DeleteMapping("/comments")
-    public ResponseMessageDto delete(@RequestBody CommentRequestDto request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return commentService.delete(request, userDetails.getUser());
+    @DeleteMapping("/comments/{id}")
+    public ResponseMessageDto delete(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return commentService.delete(id, userDetails.getUser());
     }
 }
