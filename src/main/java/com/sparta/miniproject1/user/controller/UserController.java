@@ -1,5 +1,6 @@
 package com.sparta.miniproject1.user.controller;
 
+import com.sparta.miniproject1.image.dto.ImageResponseDto;
 import com.sparta.miniproject1.user.dto.ChangePasswordRequestDto;
 
 import com.sparta.miniproject1.user.dto.LoginRequestDto;
@@ -29,14 +30,12 @@ public class UserController {
     private final UserService userService;
 
     @ApiOperation(value = "회원가입", notes = "유저 하나를 추가한다.")
-    @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
     @PostMapping("/signup")
     public ResponseDto signup(@RequestBody SignupRequestDto signupRequestDto) {
         return userService.signup(signupRequestDto);
 
     }
     @ApiOperation(value = "로그인", notes = "입력받은 정보를 기반으로 로그인 작업을 수행한다.")
-    @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
     @PostMapping("/login")
     public ResponseDto login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
         return userService.login(loginRequestDto, response);
@@ -47,13 +46,11 @@ public class UserController {
         return userDetails.getUsername();
     }
     @ApiOperation(value = "비밀번호 변경", notes = "사용자의 비밀번호를 변경한다.")
-    @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
     @PutMapping("/changepw/{id}")
     public ResponseDto changePassword(@PathVariable Long id, @RequestBody ChangePasswordRequestDto changePasswordRequestDto,  HttpServletRequest request) {
         return userService.changePassword(id,changePasswordRequestDto, request);
     }
     @ApiOperation(value = "계정 삭제", notes = "유저를 삭제한다.(자신 한정)")
-    @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
     @DeleteMapping("/delete/{id}")
     public ResponseDto deleteBoard(@PathVariable Long id, HttpServletRequest request) {
         return userService.deleteId(id, request);
