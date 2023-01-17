@@ -30,6 +30,9 @@ public class Post {
     //상품 설명
     @Column
     private String description;
+    //상품 이미지 url
+    @Column
+    private String imageUrl;
 
     //게시글을 작성한 유저
     @Column
@@ -48,6 +51,7 @@ public class Post {
         this.price = postRequestDto.getPrice();
         this.description = postRequestDto.getDescription();
         this.userId = user.getId();
+        this.imageUrl = postRequestDto.getImageResponseDto().getUrl();
     }
 
     public void update(PostRequestDto request) {

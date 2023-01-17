@@ -4,23 +4,22 @@ import com.sparta.miniproject1.post.dto.PageResponseDto;
 import com.sparta.miniproject1.post.dto.PostRequestDto;
 import com.sparta.miniproject1.post.dto.PostResponseDto;
 import com.sparta.miniproject1.post.dto.ResponseDto;
-import com.sparta.miniproject1.post.entity.Post;
 import com.sparta.miniproject1.post.service.PostService;
 import com.sparta.miniproject1.user.security.UserDetailsImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 
 @Api(tags = {"Post"})
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class PostController {
 
     private final PostService postService;
@@ -30,6 +29,7 @@ public class PostController {
     @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
     @PostMapping("/posts")
     public ResponseDto createPost(@RequestBody PostRequestDto postRequestDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        log.info(postRequestDto.getImageResponseDto().getFullName());
         return postService.createPost(postRequestDto,userDetails.getUser());
     }
     //전체 목록 조회

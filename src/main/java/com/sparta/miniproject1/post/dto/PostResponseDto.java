@@ -13,6 +13,7 @@ public class PostResponseDto {
     private String description;
     private int price;
     private String category;
+    private String imageUrl;
     private List<CommentDto> comments;
 
     public PostResponseDto(Post post, List<CommentDto> comments){
@@ -20,6 +21,7 @@ public class PostResponseDto {
         this.description = post.getDescription();
         this.price = post.getPrice();
         this.category = post.getCategory();
+        this.imageUrl = post.getImageUrl();
         this.comments = comments;
     }
 }

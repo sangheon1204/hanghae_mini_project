@@ -1,10 +1,12 @@
 package com.sparta.miniproject1.image.dto;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 
 @Getter
+@NoArgsConstructor
 public class ImageResponseDto {
     private String originalFileName;
     private String fullName;

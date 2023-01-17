@@ -11,6 +11,7 @@ public class PageResponseDto {
     private String description;
     private int price;
     private String category;
+    private String imageUrl;
 
     public static PageResponseDto toDto(final Post post) {
         return PageResponseDto.builder()
@@ -18,6 +19,7 @@ public class PageResponseDto {
                 .description(post.getDescription())
                 .price(post.getPrice())
                 .category(post.getCategory())
+                .imageUrl(post.getImageUrl())
                 .build();
     }
 }
