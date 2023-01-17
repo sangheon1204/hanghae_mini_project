@@ -17,6 +17,8 @@ public class User {
     @Column(nullable = false)
     private String nickname;
     @Column(nullable = false)
+    private Long kakaoId;
+    @Column(nullable = false)
     private String password;
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role = UserRoleEnum.USER;
@@ -31,7 +33,16 @@ public class User {
         this.password = password;
         this.imgurl = signupRequestDto.getImageResponseDto().getUrl();
     }
-
+    public User(String username, Long kakaoId, String password, UserRoleEnum role) {
+        this.username = username;
+        this.kakaoId = kakaoId;
+        this.password = password;
+        this.role = role;
+    }
+    public User kakaoIdUpdate(Long kakaoId) {
+        this.kakaoId = kakaoId;
+        return this;
+    }
     public void update(String npw) {
         this.password=npw;
     }

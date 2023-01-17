@@ -31,7 +31,9 @@ public class JwtUtil {
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String AUTHORIZATION_KEY = "auth";
     private static final String BEARER_PREFIX = "Bearer ";
+    //토큰 형태 : Bearer
     private static final long TOKEN_TIME = 60 * 60 * 1000L;
+    //토큰 지속시간(지금은 1시간)
     private final UserDetailsServiceImpl userDetailsService;
 
     @Value("${jwt.secret.key}")
