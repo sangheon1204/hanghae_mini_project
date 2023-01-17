@@ -1,10 +1,5 @@
 package com.sparta.miniproject1.post.service;
 
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.util.IOUtils;
 import com.sparta.miniproject1.comment.dto.CommentDto;
 import com.sparta.miniproject1.comment.entity.Comment;
 import com.sparta.miniproject1.comment.repository.CommentRepository;
@@ -17,22 +12,17 @@ import com.sparta.miniproject1.post.dto.ResponseDto;
 import com.sparta.miniproject1.post.entity.Post;
 import com.sparta.miniproject1.post.repository.PostRepository;
 import com.sparta.miniproject1.post.dto.ReplyDto;
-import com.sparta.miniproject1.reply.entity.Reply;
-import com.sparta.miniproject1.reply.repository.ReplyRepository;
-import com.sparta.miniproject1.s3.CommonUtils;
 import com.sparta.miniproject1.user.entity.User;
 import com.sparta.miniproject1.user.entity.UserRoleEnum;
 import com.sparta.miniproject1.wish.entity.Wish;
 import com.sparta.miniproject1.wish.repository.WishRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -46,7 +36,6 @@ public class PostService {
     private final PostRepository postRepository;
     private final WishRepository wishRepository;
     private final CommentRepository commentRepository;
-    private final ReplyRepository replyRepository;
 
 
 
@@ -81,10 +70,10 @@ public class PostService {
         //id로 게시물 조회하기
         Post post = findPostByid(id);
         //게시글에 딸린 댓글 리스트를 가지고 있는 객체 생성
-        Comments comments = new Comments(commentRepository.findAllByPostIdOrderByCreatedAtDesc(post.getId()));
+        Comments comments = new Comments(commentRepository.findAllByPostIdAndIsReplyOrderByCreatedAtDesc(post.getId(), false));
         List<CommentDto> commentDtoList = new ArrayList<>();
         for(Comment comment : comments.getComments()) {
-            Replies replies = new Replies(replyRepository.findAllByCommentIdOrderByCreatedAtDesc(comment.getId()));
+            Replies replies = new Replies(commentRepository.findAllByReferenceId(comment.getId()));
             List<ReplyDto> replyDtoList = replies.getReplies().stream().map(ReplyDto :: new).collect(Collectors.toList());
             commentDtoList.add(new CommentDto(comment.getId(),comment.getComment(),replyDtoList));
         }

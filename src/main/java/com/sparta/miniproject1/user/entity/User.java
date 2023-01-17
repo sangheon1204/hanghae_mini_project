@@ -1,13 +1,7 @@
 package com.sparta.miniproject1.user.entity;
-import com.sparta.miniproject1.comment.entity.Comment;
-import com.sparta.miniproject1.post.entity.Post;
-import com.sparta.miniproject1.reply.entity.Reply;
-import com.sparta.miniproject1.wish.entity.Wish;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @NoArgsConstructor
 @Getter
