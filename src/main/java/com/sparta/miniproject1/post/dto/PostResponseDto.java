@@ -11,7 +11,7 @@ import java.util.List;
 public class PostResponseDto {
     private String name;
     private String description;
-    private int price;
+    private String price;
     private String category;
     private String imageUrl;
     private List<CommentDto> comments;
