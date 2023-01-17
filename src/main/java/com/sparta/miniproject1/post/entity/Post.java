@@ -26,7 +26,7 @@ public class Post {
     private String category;
     //상품의 가격
     @Column(nullable = false)
-    private int price;
+    private String price;
     //상품 설명
     @Column
     private String description;
@@ -61,7 +61,7 @@ public class Post {
         if(request.getDescription() != null) {
             this.description = request.getDescription();
         }
-        if(request.getPrice() != 0) {
+        if(request.getPrice() != null) {
             this.price = request.getPrice();
         }
         if(request.getCategory() != null) {
