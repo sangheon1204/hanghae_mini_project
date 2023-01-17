@@ -18,17 +18,15 @@ public class Wish {
     @Column
     private Boolean state;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column
+    private Long userId;
 
-    @ManyToOne
-    @JoinColumn(name = "post_id")
-    private Post post;
+    @Column
+    private Long postId;
 
     public Wish(User user, Post post) {
-        this.user = user;
-        this.post = post;
+        this.userId = user.getId();
+        this.postId = post.getId();
         this.state = true;
     }
 

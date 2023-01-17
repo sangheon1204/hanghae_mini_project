@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
 import com.sparta.miniproject1.comment.dto.CommentDto;
 import com.sparta.miniproject1.comment.entity.Comment;
+import com.sparta.miniproject1.comment.repository.CommentRepository;
 import com.sparta.miniproject1.post.Comments;
 import com.sparta.miniproject1.post.Replies;
 import com.sparta.miniproject1.post.dto.PageResponseDto;
@@ -16,6 +17,8 @@ import com.sparta.miniproject1.post.dto.ResponseDto;
 import com.sparta.miniproject1.post.entity.Post;
 import com.sparta.miniproject1.post.repository.PostRepository;
 import com.sparta.miniproject1.post.dto.ReplyDto;
+import com.sparta.miniproject1.reply.entity.Reply;
+import com.sparta.miniproject1.reply.repository.ReplyRepository;
 import com.sparta.miniproject1.s3.CommonUtils;
 import com.sparta.miniproject1.user.entity.User;
 import com.sparta.miniproject1.user.entity.UserRoleEnum;
@@ -42,6 +45,8 @@ import java.util.stream.Collectors;
 public class PostService {
     private final PostRepository postRepository;
     private final WishRepository wishRepository;
+    private final CommentRepository commentRepository;
+    private final ReplyRepository replyRepository;
 
 
 
@@ -76,10 +81,10 @@ public class PostService {
         //id로 게시물 조회하기
         Post post = findPostByid(id);
         //게시글에 딸린 댓글 리스트를 가지고 있는 객체 생성
-        Comments comments = new Comments(post.getCommentList());
+        Comments comments = new Comments(commentRepository.findAllByPostIdOrderByCreatedAtDesc(post.getId()));
         List<CommentDto> commentDtoList = new ArrayList<>();
         for(Comment comment : comments.getComments()) {
-            Replies replies = new Replies(comment.getReplyList());
+            Replies replies = new Replies(replyRepository.findAllByCommentIdOrderByCreatedAtDesc(comment.getId()));
             List<ReplyDto> replyDtoList = replies.getReplies().stream().map(ReplyDto :: new).collect(Collectors.toList());
             commentDtoList.add(new CommentDto(comment.getId(),comment.getComment(),replyDtoList));
         }
@@ -100,7 +105,18 @@ public class PostService {
     public ResponseDto deletePost(Long id, User user) {
         //id로 게시물 찾기
         Post post = findPostByid(id,user);
-        //게시물 삭제
+        List<Comment> commentList = commentRepository.findALlByPostId(post.getId());
+        //대댓글 삭제
+        for(Comment comment: commentList) {
+            List<Reply> replyList = replyRepository.findALlByCommentId(comment.getId());
+            replyRepository.deleteAll(replyList);
+        }
+        //댓글 삭제
+        commentRepository.deleteAll(commentList);
+        List<Wish> wishList = wishRepository.findAllByPostId(post.getId());
+        //찜 삭제
+        wishRepository.deleteAll(wishList);
+        //게시글 삭제
         postRepository.delete(post);
         return new ResponseDto("삭제 완료.");
     }
@@ -110,7 +126,7 @@ public class PostService {
         // id로 게시글 찾기
         Post post = findPostByid(id);
         // 유저가 찜했는지 여부 확인
-        Wish wish =wishRepository.findByUserAndPost(user,post);
+        Wish wish =wishRepository.findByUserIdAndPostId(user.getId(), post.getId());
         if(wish!= null) {
             //이미 찜을 한 경우
             //찜 취소하면서 저장된 객체 삭제
@@ -129,7 +145,7 @@ public class PostService {
             );
             return post;
         }
-        Post post = postRepository.findByIdAndUser(id,user).orElseThrow(
+        Post post = postRepository.findByIdAndUserId(id,user.getId()).orElseThrow(
                 ()-> new IllegalArgumentException("해당 게시물은 존재하지 않습니다.")
         );
         return post;

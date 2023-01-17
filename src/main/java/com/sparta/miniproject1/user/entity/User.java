@@ -23,18 +23,9 @@ public class User {
     private String password;
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
-    //올려둔 품목 리스트
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Post> postList = new ArrayList<>();
-    //상품 찜한 리스트
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Wish> wishList = new ArrayList<>();
-    //응답 리스트
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> commentList = new ArrayList<>();
-    //답장 리스트
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Reply> replyList = new ArrayList<>();
+
+    @Column(nullable = false)
+    private boolean state = true;
 
     public User(String username, String password, UserRoleEnum role) {
         this.username = username;
@@ -44,5 +35,9 @@ public class User {
 
     public void update(String npw) {
         this.password=npw;
+    }
+
+    public void deleteUser() {
+        this.state = false;
     }
 }

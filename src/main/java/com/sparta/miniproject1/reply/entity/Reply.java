@@ -17,20 +17,18 @@ public class Reply extends Timestamped {
     @Column
     Long id;
 
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    Comment comment;
+    @Column
+    Long commentId;
 
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    User user;
+    @Column
+    Long userId;
 
     @Column(nullable = false)
     String reply;
 
     public Reply(Comment comment, User user, String reply) {
-        this.comment = comment;
-        this.user = user;
+        this.commentId = comment.getId();
+        this.userId = user.getId();
         this.reply = reply;
     }
 

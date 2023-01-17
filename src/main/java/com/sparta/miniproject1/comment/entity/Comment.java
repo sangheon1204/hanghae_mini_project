@@ -20,23 +20,18 @@ public class Comment extends Timestamped {
     @Column
     Long id;
 
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private Post post;
+    @Column
+    private Long postId;
 
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private User user;
+    @Column
+    private Long userId;
 
     @Column(nullable = false)
     String comment;
 
-    @OneToMany(mappedBy = "comment", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private final List<Reply> replyList = new ArrayList<>();
-
-    public Comment(Post post, User user, String comment) {
-        this.post = post;
-        this.user = user;
+    public Comment(Post post, Long userId, String comment) {
+        this.postId = post.getId();
+        this.userId = userId;
         this.comment = comment;
     }
 

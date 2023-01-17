@@ -31,26 +31,16 @@ public class Post {
     @Column
     private String description;
 
-
     //게시글을 작성한 유저
-    @ManyToOne
-    @JoinColumn
-    private User user;
-
-    //상품 찜하기
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Wish> wishList = new ArrayList<>();
-
-    //게시글에 달려있는 댓글 리스트
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> commentList = new ArrayList<>();
+    @Column
+    private Long userId;
 
     public Post(PostRequestDto postRequestDto, User user) {
         this.name = postRequestDto.getName();
         this.category = postRequestDto.getCategory();
         this.price = postRequestDto.getPrice();
         this.description = postRequestDto.getDescription();
-        this.user = user;
+        this.userId = user.getId();
     }
 
     public void update(PostRequestDto request) {
