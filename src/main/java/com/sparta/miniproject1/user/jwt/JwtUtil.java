@@ -33,7 +33,7 @@ public class JwtUtil {
     private static final String BEARER_PREFIX = "Bearer ";
     //토큰 형태 : Bearer
     private static final long TOKEN_TIME = 12 * 60 * 60 * 1000L;
-    //토큰 지속시간(지금은 1시간)
+    //토큰 지속시간(지금은 12시간)
     private final UserDetailsServiceImpl userDetailsService;
 
     @Value("${jwt.secret.key}")
