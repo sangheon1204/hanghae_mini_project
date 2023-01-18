@@ -31,6 +31,9 @@ public class Comment extends Timestamped {
     @Column
     Long referenceId;   //참조한 댓글의 id
 
+    @Column(nullable = false)
+    private boolean state = true;
+
     public Comment(Post post, Long userId, String comment, Boolean isReply, Long referenceId) {
         this.post = post;
         this.userId = userId;
@@ -41,5 +44,9 @@ public class Comment extends Timestamped {
 
     public void update(String comment) {
         this.comment = comment;
+    }
+
+    public void deleteComment() {
+        this.state = false;
     }
 }

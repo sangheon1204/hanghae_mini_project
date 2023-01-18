@@ -62,7 +62,7 @@ public class PostController {
     @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
     @DeleteMapping("/posts/{id}")
     public ResponseDto deletePost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return postService.deletePost(id,userDetails.getUser());
+        return postService.softDeletePost(id,userDetails.getUser());
     }
 
     //상품 찜하기 기능
