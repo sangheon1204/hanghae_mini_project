@@ -20,22 +20,22 @@ public class Wish {
     Post post;
 
     @Column
-    private Boolean state;
+    private boolean state = true;
 
     @Column
     private Long userId;
 
+
     public Wish(User user, Post post) {
         this.userId = user.getId();
         this.post = post;
-        this.state = true;
     }
 
-    public void changeState() {
-        if(this.state == true) {
+    public void updateWish() {
+        if(this.state) {
             this.state = false;
-        }else {
-            this.state = true;
+            return;
         }
+        this.state = true;
     }
 }

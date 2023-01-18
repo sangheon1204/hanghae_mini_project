@@ -35,6 +35,6 @@ public class CommentController {
     @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
     @DeleteMapping("/comments/{id}")
     public ResponseMessageDto delete(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return commentService.delete(id, userDetails.getUser());
+        return commentService.softDelete(id, userDetails.getUser());
     }
 }

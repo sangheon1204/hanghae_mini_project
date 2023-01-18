@@ -1,11 +1,17 @@
 package com.sparta.miniproject1.user.service;
 
+import com.sparta.miniproject1.comment.entity.Comment;
+import com.sparta.miniproject1.comment.repository.CommentRepository;
+import com.sparta.miniproject1.post.entity.Post;
+import com.sparta.miniproject1.post.repository.PostRepository;
 import com.sparta.miniproject1.user.dto.*;
 
 import com.sparta.miniproject1.user.entity.User;
 import com.sparta.miniproject1.user.jwt.JwtUtil;
 import com.sparta.miniproject1.user.repository.UserRepository;
 
+import com.sparta.miniproject1.wish.entity.Wish;
+import com.sparta.miniproject1.wish.repository.WishRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -25,6 +33,9 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final PostRepository postRepository;
+    private final WishRepository wishRepository;
+    private final CommentRepository commentRepository;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     // ADMIN_TOKEN
@@ -118,7 +129,7 @@ public class UserService {
     }
 
 
-    @Transactional
+    @Transactional  // soft delete 이지만 게시글 댓글을 남김
     public ResponseDto deleteId(Long id, HttpServletRequest request) {
         String token = jwtUtil.resolveToken(request);
         Claims claims;
@@ -135,6 +146,42 @@ public class UserService {
         if(user.getId()!=id){ //대리 삭제 방지
             return new ResponseDto("다른 아이디 삭제는 안됩니다.");
         }
+        // 삭제를 database -> state true->false (휴먼계정)
+        user.deleteUser();
+        return new ResponseDto("아이디 삭제 완료");
+
+    }
+
+    @Transactional  // soft delete 이고 게시글 댓글도 지움
+    public ResponseDto softDeleteId(Long id, HttpServletRequest request) {
+        String token = jwtUtil.resolveToken(request);
+        Claims claims;
+        if (jwtUtil.validateToken(token)) {
+            // 토큰에서 사용자 정보 가져오기
+            claims = jwtUtil.getUserInfoFromToken(token);
+        } else {
+            throw new IllegalArgumentException("Token Error");
+        }
+        // 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
+        User user =  userRepository.findByUsername(claims.getSubject()).orElseThrow(
+                () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
+        );
+        if(user.getId()!=id){ //대리 삭제 방지
+            return new ResponseDto("다른 아이디 삭제는 안됩니다.");
+        }
+
+        // 댓글 / 대댓글 삭제
+        List<Comment> commentList = commentRepository.findByUserId(user.getId()).orElse(new ArrayList<>());
+        commentList.forEach(Comment::deleteComment);
+
+        // 찜 상품 삭제
+        List<Wish> wishList = wishRepository.findAllByUserIdAndState(user.getId(), true).orElse(new ArrayList<>());
+        wishList.forEach(Wish::updateWish);
+
+        // 게시글 삭제
+        List<Post> postList = postRepository.findByUserId(user.getId()).orElse(new ArrayList<>());
+        postList.forEach(Post::deletePost);
+
         // 삭제를 database -> state true->false (휴먼계정)
         user.deleteUser();
         return new ResponseDto("아이디 삭제 완료");
