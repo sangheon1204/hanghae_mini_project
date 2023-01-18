@@ -10,6 +10,7 @@ import java.util.List;
 
 @Getter
 public class PostResponseDto {
+    private Long id;
     private String name;
     private String description;
     private String price;
@@ -20,6 +21,7 @@ public class PostResponseDto {
     private List<CommentDto> comments;
 
     public PostResponseDto(Post post, List<CommentDto> comments){
+        this.id = post.getId();
         this.name = post.getName();
         this.description = post.getDescription();
         this.price = post.getPrice();

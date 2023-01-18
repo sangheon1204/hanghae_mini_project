@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class PageResponseDto {
+    private Long id;
     private String name;
     private String description;
     private String price;
@@ -15,6 +16,7 @@ public class PageResponseDto {
 
     public static PageResponseDto toDto(final Post post) {
         return PageResponseDto.builder()
+                .id(post.getId())
                 .name(post.getName())
                 .description(post.getDescription())
                 .price(post.getPrice())
