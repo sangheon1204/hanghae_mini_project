@@ -30,7 +30,7 @@ public class ImageService {
 
     @Transactional
     //이미지 파일 s3에 저장
-    public ImageResponseDto uploadFile(MultipartFile multipartFile) throws IOException {
+    public ImageResponseDto uploadProfile(MultipartFile multipartFile) throws IOException {
         String imageUrl;
         log.info(multipartFile.getName());
         //s3에 저장하고 이미지 url 받아오기
@@ -44,7 +44,29 @@ public class ImageService {
             ByteArrayInputStream byteArrayIs = new ByteArrayInputStream(bytes);
 
             //s3에 저장
-            amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, byteArrayIs, objectMetadata)
+            amazonS3Client.putObject(new PutObjectRequest(bucketName, "profile/"+fileName, byteArrayIs, objectMetadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+            imageUrl = amazonS3Client.getUrl(bucketName, fileName).toString();
+            return new ImageResponseDto(multipartFile, imageUrl);
+        }
+        return null;
+    }
+
+    public ImageResponseDto uploadImage(MultipartFile multipartFile) throws IOException {
+        String imageUrl;
+        log.info(multipartFile.getName());
+        //s3에 저장하고 이미지 url 받아오기
+        if (!multipartFile.isEmpty()) {
+            String fileName = CommonUtils.buildFileName(multipartFile.getOriginalFilename());
+            ObjectMetadata objectMetadata = new ObjectMetadata();
+            objectMetadata.setContentType(multipartFile.getContentType());
+
+            byte[] bytes = IOUtils.toByteArray(multipartFile.getInputStream());
+            objectMetadata.setContentLength(bytes.length);
+            ByteArrayInputStream byteArrayIs = new ByteArrayInputStream(bytes);
+
+            //s3에 저장
+            amazonS3Client.putObject(new PutObjectRequest(bucketName, "image/"+fileName, byteArrayIs, objectMetadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
             imageUrl = amazonS3Client.getUrl(bucketName, fileName).toString();
             return new ImageResponseDto(multipartFile, imageUrl);
