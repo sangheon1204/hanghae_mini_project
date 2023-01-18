@@ -1,12 +1,16 @@
 package com.sparta.miniproject1.user.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sparta.miniproject1.user.dto.ChangePasswordRequestDto;
 
 import com.sparta.miniproject1.user.dto.LoginRequestDto;
 import com.sparta.miniproject1.user.dto.ResponseDto;
 import com.sparta.miniproject1.user.dto.SignupRequestDto;
+import com.sparta.miniproject1.user.jwt.JwtUtil;
 import com.sparta.miniproject1.user.security.UserDetailsImpl;
+import com.sparta.miniproject1.user.service.KakaoService;
 import com.sparta.miniproject1.user.service.UserService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import io.swagger.annotations.ApiOperation;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -24,12 +29,30 @@ import javax.servlet.http.HttpServletResponse;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final KakaoService kakaoService;
 
     @ApiOperation(value = "회원가입", notes = "유저 하나를 추가한다.")
     @PostMapping("/signup")
     public ResponseDto signup(@RequestBody SignupRequestDto signupRequestDto) {
         return userService.signup(signupRequestDto);
 
+    }
+    @ApiOperation(value = "카카오 로그인", notes = "입력받은 정보를 기반으로 로그인 작업을 수행한다.")
+    @GetMapping("/kakao/callback")    //카카오 로그인
+    public ResponseDto kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+        log.info("나와라");
+        log.info(code);
+
+        // code: 카카오 서버로부터 받은 인가 코드
+        String createToken = kakaoService.kakaoLogin(code);
+
+        log.info("토큰: "+createToken);
+        // Cookie 생성 및 직접 브라우저에 Set
+        Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, createToken.substring(7));
+        cookie.setPath("/");
+        response.addCookie(cookie);
+
+        return new ResponseDto("카카오 로그인 완료");
     }
     @ApiOperation(value = "로그인", notes = "입력받은 정보를 기반으로 로그인 작업을 수행한다.")
     @PostMapping("/login")
