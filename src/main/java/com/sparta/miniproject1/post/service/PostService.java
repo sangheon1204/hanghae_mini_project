@@ -17,17 +17,13 @@ import com.sparta.miniproject1.user.entity.UserRoleEnum;
 import com.sparta.miniproject1.wish.entity.Wish;
 import com.sparta.miniproject1.wish.repository.WishRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,7 +55,7 @@ public class PostService {
         Pageable pageable = PageRequest.of(page,size,sort);
         //게시글 전체 조회
         Page<Post> posts;
-        posts = postRepository.findAll(pageable);
+        posts = postRepository.findAllByState(pageable, true).orElse(new PageImpl<>(new ArrayList<>()));
         Page<PageResponseDto> pageResponseDto = posts.map(PageResponseDto :: toDto);
         return pageResponseDto;
     }
@@ -70,10 +66,10 @@ public class PostService {
         //id로 게시물 조회하기
         Post post = findPostByid(id);
         //게시글에 딸린 댓글 리스트를 가지고 있는 객체 생성
-        Comments comments = new Comments(commentRepository.findAllByPostIdAndIsReplyOrderByCreatedAtDesc(post.getId(), false));
+        Comments comments = new Comments(commentRepository.findAllByPostIdAndIsReplyAndStateOrderByCreatedAtDesc(post.getId(), false, true).orElse(new ArrayList<>()));
         List<CommentDto> commentDtoList = new ArrayList<>();
         for(Comment comment : comments.getComments()) {
-            Replies replies = new Replies(commentRepository.findAllByReferenceId(comment.getId()));
+            Replies replies = new Replies(commentRepository.findAllByReferenceIdAndState(comment.getId(), true).orElse(new ArrayList<>()));
             List<ReplyDto> replyDtoList = replies.getReplies().stream().map(ReplyDto :: new).collect(Collectors.toList());
             commentDtoList.add(new CommentDto(comment.getId(),comment.getComment(),replyDtoList));
         }
@@ -102,20 +98,46 @@ public class PostService {
         return new ResponseDto("삭제 완료.");
     }
 
+    //게시물 soft delete
+    @Transactional
+    public ResponseDto softDeletePost(Long id, User user) {
+        //id로 게시물 찾기
+        Post post = findPostByid(id,user);
+
+        //대댓글 삭제 //댓글 삭제
+        List<Comment> commentList = commentRepository.findAllByPost_Id(post.getId()).orElse(new ArrayList<>());   //댓글이랑 대댓글 포함
+        commentList.forEach(Comment::deleteComment);
+
+        //찜 삭제
+        List<Wish> wishList = wishRepository.findAllByPostIdAndState(post.getId(), true).orElse(new ArrayList<>());
+        wishList.forEach(Wish::updateWish);
+
+        //게시글 삭제
+        post.deletePost();
+
+        return new ResponseDto("삭제 완료.");
+    }
+
     //게시물 찜하기/ 찜 취소하기
+    @Transactional
     public ResponseDto likePost(Long id, User user) {
         // id로 게시글 찾기
         Post post = findPostByid(id);
         // 유저가 찜했는지 여부 확인
-        Wish wish =wishRepository.findByUserIdAndPostId(user.getId(), post.getId());
-        if(wish!= null) {
-            //이미 찜을 한 경우
-            //찜 취소하면서 저장된 객체 삭제
-            wish.changeState();
+        Optional<Wish> wish = wishRepository.findByUserIdAndPostId(user.getId(), post.getId());
+
+        //찜 했던 기록이 없으면 추가
+        if(wish.isEmpty()) {
+            Wish newWish = new Wish(user, post);
+            wishRepository.save(newWish);
+            return new ResponseDto("찜하기");
+        }
+        //찜을 하고 있는 상태면 삭제 상태로 변경
+        wish.get().updateWish();
+        if(wish.get().isState()) {
             return new ResponseDto("찜하기 취소");
         }
-        Wish newWish = new Wish(user, post);
-        wishRepository.save(newWish);
+        //찜을 했었지만 취소했던 상태이면 다시 복원
         return new ResponseDto("찜하기");
     }
 

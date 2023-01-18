@@ -34,10 +34,11 @@ public class Post extends Timestamped {
     //상품 이미지 url
     @Column
     private String imageUrl;
-
     //게시글을 작성한 유저
     @Column
     private Long userId;
+    @Column(nullable = false)
+    private boolean state = true;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     List<Wish> wishList = new ArrayList<>();
@@ -69,5 +70,9 @@ public class Post extends Timestamped {
             this.category = request.getCategory();
         }
 
+    }
+
+    public void deletePost() {
+        this.state = false;
     }
 }

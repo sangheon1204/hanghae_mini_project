@@ -1,6 +1,5 @@
 package com.sparta.miniproject1.user.controller;
 
-import com.sparta.miniproject1.image.dto.ImageResponseDto;
 import com.sparta.miniproject1.user.dto.ChangePasswordRequestDto;
 
 import com.sparta.miniproject1.user.dto.LoginRequestDto;
@@ -13,10 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 
 import javax.servlet.http.HttpServletRequest;
@@ -53,6 +49,6 @@ public class UserController {
     @ApiOperation(value = "계정 삭제", notes = "유저를 삭제한다.(자신 한정)")
     @DeleteMapping("/delete/{id}")
     public ResponseDto deleteBoard(@PathVariable Long id, HttpServletRequest request) {
-        return userService.deleteId(id, request);
+        return userService.softDeleteId(id, request);
     }
 }
