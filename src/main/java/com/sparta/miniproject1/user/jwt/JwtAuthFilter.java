@@ -28,7 +28,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = jwtUtil.resolveToken(request);
 
-        if(request.getRequestURI().equals("/api/user/signup") || request.getRequestURI().equals("/api/user/login") || request.getRequestURI().equals("/files/**")) {
+        if(request.getRequestURI().equals("/api/user/signup") || request.getRequestURI().equals("/api/user/login")
+                || request.getRequestURI().equals("/files/image") || request.getRequestURI().equals("/files/profile")) {
             filterChain.doFilter(request,response);
             return;
         }

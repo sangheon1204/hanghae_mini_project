@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
@@ -29,32 +30,18 @@ public class ImageService {
     private String bucketName;
 
     @Transactional
-    //이미지 파일 s3에 저장
+    //프로필 이미지를 profile 폴더에 저장
     public ImageResponseDto uploadProfile(MultipartFile multipartFile) throws IOException {
-        String imageUrl;
-        log.info(multipartFile.getName());
-        //s3에 저장하고 이미지 url 받아오기
-        if (!multipartFile.isEmpty()) {
-            String fileName = CommonUtils.buildFileName(multipartFile.getOriginalFilename());
-            ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentType(multipartFile.getContentType());
-
-            byte[] bytes = IOUtils.toByteArray(multipartFile.getInputStream());
-            objectMetadata.setContentLength(bytes.length);
-            ByteArrayInputStream byteArrayIs = new ByteArrayInputStream(bytes);
-
-            //s3에 저장
-            amazonS3Client.putObject(new PutObjectRequest(bucketName, "profile/"+fileName, byteArrayIs, objectMetadata)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
-            imageUrl = amazonS3Client.getUrl(bucketName, fileName).toString();
-            return new ImageResponseDto(multipartFile, imageUrl);
-        }
-        return null;
+        return saveAndReturn(multipartFile, "profile/");
+    }
+    @Transactional
+    //상품 이미지를 image 폴더에 저장
+    public ImageResponseDto uploadImage(MultipartFile multipartFile) throws IOException {
+        return saveAndReturn(multipartFile, "image/");
     }
 
-    public ImageResponseDto uploadImage(MultipartFile multipartFile) throws IOException {
+    public ImageResponseDto saveAndReturn(MultipartFile multipartFile, String key) throws IOException{
         String imageUrl;
-        log.info(multipartFile.getName());
         //s3에 저장하고 이미지 url 받아오기
         if (!multipartFile.isEmpty()) {
             String fileName = CommonUtils.buildFileName(multipartFile.getOriginalFilename());
@@ -66,9 +53,9 @@ public class ImageService {
             ByteArrayInputStream byteArrayIs = new ByteArrayInputStream(bytes);
 
             //s3에 저장
-            amazonS3Client.putObject(new PutObjectRequest(bucketName, "image/"+fileName, byteArrayIs, objectMetadata)
+            amazonS3Client.putObject(new PutObjectRequest(bucketName, key+fileName, byteArrayIs, objectMetadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
-            imageUrl = amazonS3Client.getUrl(bucketName, fileName).toString();
+            imageUrl = amazonS3Client.getUrl(bucketName, key + fileName).toString();
             return new ImageResponseDto(multipartFile, imageUrl);
         }
         return null;
