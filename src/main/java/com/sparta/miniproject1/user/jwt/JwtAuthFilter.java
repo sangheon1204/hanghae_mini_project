@@ -28,6 +28,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = jwtUtil.resolveToken(request);
 
+        System.out.println(request.getRequestURI());
+
+        if(request.getRequestURI().equals("/api/user/signup") || request.getRequestURI().equals("/api/user/login")) {
+            filterChain.doFilter(request,response);
+            return;
+        }
         if(token != null) {
             if(!jwtUtil.validateToken(token)){
                 jwtExceptionHandler(response, "Token Error", HttpStatus.UNAUTHORIZED.value());
