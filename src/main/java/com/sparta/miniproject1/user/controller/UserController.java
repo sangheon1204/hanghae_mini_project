@@ -39,7 +39,7 @@ public class UserController {
     }
     @ApiOperation(value = "카카오 로그인", notes = "입력받은 정보를 기반으로 로그인 작업을 수행한다.")
     @GetMapping("/kakao/callback")    //카카오 로그인
-    public String kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+    public ResponseDto kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
         log.info("나와라");
         log.info(code);
 
@@ -52,7 +52,7 @@ public class UserController {
         cookie.setPath("/");
         response.addCookie(cookie);
 
-        return "카카오 성공";
+        return new ResponseDto("카카오 로그인 완료");
     }
     @ApiOperation(value = "로그인", notes = "입력받은 정보를 기반으로 로그인 작업을 수행한다.")
     @PostMapping("/login")
