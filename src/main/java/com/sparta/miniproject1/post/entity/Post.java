@@ -48,12 +48,17 @@ public class Post extends Timestamped {
 
 
     public Post(PostRequestDto postRequestDto, User user) {
+        if(postRequestDto.getImageResponseDto().getUrl() == null) {
+            this.imageUrl = "https://myminiprojectbucket.s3.ap-northeast-2.amazonaws.com/fleamarket.png";
+        }else{
+            this.imageUrl = postRequestDto.getImageResponseDto().getUrl();
+        }
         this.name = postRequestDto.getName();
         this.category = postRequestDto.getCategory();
         this.price = postRequestDto.getPrice();
         this.description = postRequestDto.getDescription();
         this.userId = user.getId();
-        this.imageUrl = postRequestDto.getImageResponseDto().getUrl();
+
     }
 
     public void update(PostRequestDto request) {

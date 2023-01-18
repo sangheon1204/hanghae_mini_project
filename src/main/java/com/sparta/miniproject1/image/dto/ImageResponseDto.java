@@ -19,4 +19,10 @@ public class ImageResponseDto {
         this.url = imageUrl;
         this.mediaCode = "IMAGE";
     }
+    public ImageResponseDto(String imageUrl) {
+        this.originalFileName = "fleamarket";
+        this.fullName = "png";
+        this.url = imageUrl;
+        this.mediaCode = "IMAGE";
+    }
 }

@@ -131,18 +131,7 @@ public class UserService {
 
     @Transactional  // soft delete 이지만 게시글 댓글을 남김
     public ResponseDto deleteId(Long id, HttpServletRequest request) {
-        String token = jwtUtil.resolveToken(request);
-        Claims claims;
-        if (jwtUtil.validateToken(token)) {
-            // 토큰에서 사용자 정보 가져오기
-            claims = jwtUtil.getUserInfoFromToken(token);
-        } else {
-            throw new IllegalArgumentException("Token Error");
-        }
-        // 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
-        User user =  userRepository.findByUsername(claims.getSubject()).orElseThrow(
-                () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
-        );
+        User user = getUser(request);
         if(user.getId()!=id){ //대리 삭제 방지
             return new ResponseDto("다른 아이디 삭제는 안됩니다.");
         }
@@ -154,18 +143,7 @@ public class UserService {
 
     @Transactional  // soft delete 이고 게시글 댓글도 지움
     public ResponseDto softDeleteId(Long id, HttpServletRequest request) {
-        String token = jwtUtil.resolveToken(request);
-        Claims claims;
-        if (jwtUtil.validateToken(token)) {
-            // 토큰에서 사용자 정보 가져오기
-            claims = jwtUtil.getUserInfoFromToken(token);
-        } else {
-            throw new IllegalArgumentException("Token Error");
-        }
-        // 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
-        User user =  userRepository.findByUsername(claims.getSubject()).orElseThrow(
-                () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
-        );
+        User user = getUser(request);
         if(user.getId()!=id){ //대리 삭제 방지
             return new ResponseDto("다른 아이디 삭제는 안됩니다.");
         }
@@ -185,6 +163,22 @@ public class UserService {
         // 삭제를 database -> state true->false (휴먼계정)
         user.deleteUser();
         return new ResponseDto("아이디 삭제 완료");
-
     }
+
+    private User getUser(HttpServletRequest request) {
+        String token = jwtUtil.resolveToken(request);
+        Claims claims;
+        if (jwtUtil.validateToken(token)) {
+            // 토큰에서 사용자 정보 가져오기
+            claims = jwtUtil.getUserInfoFromToken(token);
+        } else {
+            throw new IllegalArgumentException("Token Error");
+        }
+        // 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
+        User user =  userRepository.findByUsername(claims.getSubject()).orElseThrow(
+                () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
+        );
+        return user;
+    }
+
 }

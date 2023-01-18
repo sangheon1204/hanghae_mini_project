@@ -50,12 +50,14 @@ public class PostService {
     @Transactional
     public Page<PageResponseDto> getPosts(int page, int size, boolean isAsc, String sortBy) {
         //페이징 처리
+        //오름차순, 내림차순 정하기
         Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sort = Sort.by(direction,sortBy );
         Pageable pageable = PageRequest.of(page,size,sort);
         //게시글 전체 조회
         Page<Post> posts;
         posts = postRepository.findAllByState(pageable, true).orElse(new PageImpl<>(new ArrayList<>()));
+        // posts-> postsDto로 전환
         Page<PageResponseDto> pageResponseDto = posts.map(PageResponseDto :: toDto);
         return pageResponseDto;
     }
@@ -69,6 +71,7 @@ public class PostService {
         Comments comments = new Comments(commentRepository.findAllByPostIdAndIsReplyAndStateOrderByCreatedAtDesc(post.getId(), false, true).orElse(new ArrayList<>()));
         List<CommentDto> commentDtoList = new ArrayList<>();
         for(Comment comment : comments.getComments()) {
+            //대댓글 찾기
             Replies replies = new Replies(commentRepository.findAllByReferenceIdAndState(comment.getId(), true).orElse(new ArrayList<>()));
             List<ReplyDto> replyDtoList = replies.getReplies().stream().map(ReplyDto :: new).collect(Collectors.toList());
             commentDtoList.add(new CommentDto(comment.getId(),comment.getComment(),replyDtoList));
@@ -84,18 +87,6 @@ public class PostService {
         //게시물 수정
         post.update(request);
         return new ResponseDto("수정 완료.");
-    }
-
-    //게시물 삭제
-    public ResponseDto deletePost(Long id, User user) {
-        //id로 게시물 찾기
-        Post post = findPostByid(id,user);
-        //대댓글 삭제
-        //댓글 삭제
-        //찜 삭제
-        //게시글 삭제
-        postRepository.delete(post);
-        return new ResponseDto("삭제 완료.");
     }
 
     //게시물 soft delete

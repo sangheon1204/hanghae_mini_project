@@ -44,15 +44,6 @@ public class CommentService {
         return new ResponseMessageDto("수정 성공!");
     }
 
-    @Transactional  //데이터 영구 삭제
-    public ResponseMessageDto delete(Long id, User user) {
-        Comment comment = getComment(id, user);
-        List<Comment> replyList = commentRepository.findAllByReferenceIdAndState(comment.getId(), true).orElse(new ArrayList<>());
-        commentRepository.deleteAll(replyList);
-        commentRepository.delete(comment);
-        return new ResponseMessageDto("삭제 성공!");
-    }
-
     @Transactional  //데이터 상태를 삭제로 변경
     public ResponseMessageDto softDelete(Long id, User user) {
         Comment comment = getComment(id, user);
