@@ -44,7 +44,7 @@ public class UserController {
         log.info(code);
 
         // code: 카카오 서버로부터 받은 인가 코드
-        String createToken = kakaoService.kakaoLogin(code, response);
+        String createToken = kakaoService.kakaoLogin(code);
 
         log.info("토큰: "+createToken);
         // Cookie 생성 및 직접 브라우저에 Set

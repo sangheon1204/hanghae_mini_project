@@ -33,11 +33,12 @@ public class User {
         this.password = password;
         this.imgurl = signupRequestDto.getImageResponseDto().getUrl();
     }
-    public User(String username, Long kakaoId, String password) {
+    public User(String username, Long kakaoId, String password, String imgurl) {
         this.username = username;
         this.nickname = username;
         this.kakaoId = kakaoId;
         this.password = password;
+        this.imgurl = imgurl;
     }
     public User kakaoIdUpdate(Long kakaoId) {
         this.kakaoId = kakaoId;

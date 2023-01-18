@@ -32,11 +32,12 @@ public class KakaoService {
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
 
-    public String kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
-//       log.info("1단계 진입");
+    public String kakaoLogin(String code) throws JsonProcessingException {
+       log.info("1단계 진입");
         // 1. "인가 코드"로 "액세스 토큰" 요청
         String accessToken = getToken(code);
-//        log.info("2단계 진입");
+        log.info("액세스 토큰: "+accessToken);
+        log.info("2단계 진입");
         // 2. 토큰으로 카카오 API 호출 : "액세스 토큰"으로 "카카오 사용자 정보" 가져오기
         KakaoUserInfoDto kakaoUserInfo = getKakaoUserInfo(accessToken);
         log.info("3단계 진입");
@@ -54,25 +55,29 @@ public class KakaoService {
         // HTTP Header 생성
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
-
+//https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=dca78b23ee6bbb566b637457b88b9de0&redirect_uri=http://localhost:8080/api/user/kakao/callback
         // HTTP Body 생성
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", "dca78b23ee6bbb566b637457b88b9de0");
         body.add("redirect_uri", "http://localhost:8080/api/user/kakao/callback");
         body.add("code", code);
+        log.info(code);
+        log.info("바디의 값"+body);
 
         // HTTP 요청 보내기
         HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest =
                 new HttpEntity<>(body, headers);
+        log.info("HttpEntity 생성 완료");
         RestTemplate rt = new RestTemplate();
+        log.info("Rest Template 통과");
         ResponseEntity<String> response = rt.exchange(
                 "https://kauth.kakao.com/oauth/token",
                 HttpMethod.POST,
                 kakaoTokenRequest,
                 String.class
         );
-
+        log.info("응답 만들기");
         // HTTP 응답 (JSON) -> 액세스 토큰 파싱
         String responseBody = response.getBody();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -85,7 +90,7 @@ public class KakaoService {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + accessToken);
         headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
-//        log.info("Header 생성 완료");
+        log.info("Header 생성 완료");
         // HTTP 요청 보내기
         HttpEntity<MultiValueMap<String, String>> kakaoUserInfoRequest = new HttpEntity<>(headers);
         RestTemplate rt = new RestTemplate();
@@ -95,18 +100,18 @@ public class KakaoService {
                 kakaoUserInfoRequest,
                 String.class
         );
-//        log.info("Header 보내기 완료");
+        log.info("Header 보내기 완료");
         String responseBody = response.getBody();
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(responseBody);
         Long id = jsonNode.get("id").asLong();
-        String username = jsonNode.get("properties")
-                .get("nickname").asText();
+        log.info("id "+id);
+        String username = jsonNode.get("properties").get("nickname").asText();
+        log.info("username "+username);
+        String imgurl = jsonNode.get("properties").get("profile_image").asText();
+        log.info("imgurl: "+imgurl);
         String nickname = username;
-
-
-//        log.info("카카오 사용자 정보: " + id + ", " + username + ", "+nickname);
-        return new KakaoUserInfoDto(id, username, nickname);
+        return new KakaoUserInfoDto(id, username, nickname, imgurl);
     }
     // 3. 필요시에 회원가입
     private User registerKakaoUserIfNeeded(KakaoUserInfoDto kakaoUserInfo) {
@@ -119,6 +124,7 @@ public class KakaoService {
             kakaoUser = sameidUser;
             // 기존 회원정보에 카카오 Id 추가
             kakaoUser = kakaoUser.kakaoIdUpdate(kakaoId);
+            log.info("기존 회원 들어감");
         } else {
             // 신규 회원가입
             // password: random UUID
@@ -126,11 +132,12 @@ public class KakaoService {
             String password = UUID.randomUUID().toString();
             String encodedPassword = passwordEncoder.encode(password);
             log.info(kakaoUserInfo.getUsername()+", "+kakaoId+", "+encodedPassword);
-            kakaoUser = new User(kakaoUserInfo.getUsername(), kakaoId, encodedPassword);
+            kakaoUser = new User(kakaoUserInfo.getUsername(), kakaoId, encodedPassword, kakaoUserInfo.getImgurl());
+            log.info("신규회원 추가!");
         }
-            log.info("저장 가자!");
+
         userRepository.save(kakaoUser);
-            log.info("끄읏");
+            log.info("저장 완료");
         return kakaoUser;
     }
 }

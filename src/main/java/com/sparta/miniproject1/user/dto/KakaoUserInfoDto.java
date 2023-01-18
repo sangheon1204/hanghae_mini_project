@@ -9,10 +9,12 @@ public class KakaoUserInfoDto {
     private Long id;
     private String username;
     private String nickname;
+    private String imgurl;
 
-    public KakaoUserInfoDto(Long id, String username, String nickname) {
+    public KakaoUserInfoDto(Long id, String username, String nickname, String imgurl) {
         this.id = id;
         this.username= username;
         this.nickname = nickname;
+        this.imgurl = imgurl;
     }
 }
