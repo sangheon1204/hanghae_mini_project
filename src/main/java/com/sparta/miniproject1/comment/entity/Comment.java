@@ -1,6 +1,5 @@
 package com.sparta.miniproject1.comment.entity;
 
-import com.sparta.miniproject1.post.entity.Post;
 import com.sparta.miniproject1.timestamped.Timestamped;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

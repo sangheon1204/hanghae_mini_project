@@ -3,8 +3,6 @@ package com.sparta.miniproject1.comment.service;
 import com.sparta.miniproject1.comment.dto.*;
 import com.sparta.miniproject1.comment.entity.Comment;
 import com.sparta.miniproject1.comment.repository.CommentRepository;
-import com.sparta.miniproject1.post.Replies;
-import com.sparta.miniproject1.post.dto.ReplyDto;
 import com.sparta.miniproject1.post.entity.Post;
 import com.sparta.miniproject1.post.repository.PostRepository;
 import com.sparta.miniproject1.user.entity.User;
@@ -14,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -71,7 +68,7 @@ public class CommentService {
     }
 
     @Transactional
-    public ResponseMessageDto update(Long id, CommentRequestDto request, User user) {
+    public ResponseMessageDto update(Long id, CommentModifyDto request, User user) {
         Comment comment = getComment(id, user);
         comment.update(request.getComment());
         return new ResponseMessageDto("수정 성공!");
