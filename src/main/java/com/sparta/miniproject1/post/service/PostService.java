@@ -79,6 +79,9 @@ public class PostService {
                 addToCommentDtoList(commentDtoList, comment, false);
             }
         }
+        User writer = userRepository.findById(post.getUserId()).orElseThrow(
+                ()-> new IllegalArgumentException("존재하지 않는 유저입니다.")
+        );
         boolean wishState;
         Optional<Wish> wish = wishRepository.findByUserIdAndPostId(user.getId(),id);
             if (wish.isPresent()) {
@@ -86,14 +89,14 @@ public class PostService {
                 wishState = wish.get().isState();
                 //게시글 작성자 유무 판단
                 if (post.getUserId().equals(user.getId())) {
-                    return new PostResponseDto(post, commentDtoList, user, true, wishState);
+                    return new PostResponseDto(post, commentDtoList, writer, true, wishState);
                 }
-                return new PostResponseDto(post, commentDtoList, user, false, wishState);
+                return new PostResponseDto(post, commentDtoList, writer, false, wishState);
             }
         if (post.getUserId().equals(user.getId())) {
-            return new PostResponseDto(post, commentDtoList, user, true, false);
+            return new PostResponseDto(post, commentDtoList, writer, true, false);
         }
-        return new PostResponseDto(post, commentDtoList, user, false, false);
+        return new PostResponseDto(post, commentDtoList, writer, false, false);
     }
 
 

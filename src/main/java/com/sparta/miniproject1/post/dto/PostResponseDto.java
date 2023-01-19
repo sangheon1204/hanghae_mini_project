@@ -25,11 +25,11 @@ public class PostResponseDto {
     private boolean state;
     private boolean wishState;
 
-    public PostResponseDto(Post post, List<CommentDto> comments, User user, boolean state, boolean wishState){
+    public PostResponseDto(Post post, List<CommentDto> comments,User writer,boolean state, boolean wishState){
         this.id = post.getId();
         this.name = post.getName();
-        this.nickname = user.getNickname();
-        this.userUrl = user.getImgurl();
+        this.nickname = writer.getNickname();
+        this.userUrl = writer.getImgurl();
         this.description = post.getDescription();
         this.price = post.getPrice();
         this.category = post.getCategory();
