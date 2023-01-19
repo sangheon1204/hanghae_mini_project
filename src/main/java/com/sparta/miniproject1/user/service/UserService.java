@@ -56,12 +56,12 @@ public class UserService {
         if (!Pattern.matches(pt, username)) {
 
             throw new IllegalArgumentException(
-                    "아이디는 최소 4자 이상, 10자 이하이며 알파벳 소문자(a~z), 숫자(0~9)로 되어야합니다.");
+                    "아이디는 최소 4자 이상, 10자 이하이며 알파벳 소문자(a~z), 숫자(0~9) 에 한해서 구성되어야합니다.");
         }
         //비밀번호 조건 확인
         if (!Pattern.matches(ptt, pwcheck)) {
             throw new IllegalArgumentException(
-                    "비밀번호는 최소 8자 이상, 15자 이하이며 알파벳 대소문자(a~z, A~Z), 숫자(0~9), 특수문자로 되어야합니다.");
+                    "비밀번호는 최소 8자 이상, 15자 이하이며 알파벳 대소문자(a~z, A~Z), 숫자(0~9), 특수문자 에 한해서 구성되어야합니다.");
         }
         if (!pwcheck.matches(passwordCheck)) {
             throw new IllegalArgumentException(
@@ -117,12 +117,12 @@ public class UserService {
         String npw = changePasswordRequestDto.getPassword();
         if (!Pattern.matches(ptt, npw)) {
             throw new IllegalArgumentException(
-                    "비밀번호는 최소 8자 이상, 15자 이하이며 알파벳 대소문자(a~z, A~Z), 숫자(0~9), 특수문자로 되어야합니다.");
+                    "비밀번호는 최소 8자 이상, 15자 이하이며 알파벳 대소문자(a~z, A~Z), 숫자(0~9), 특수문자 에 한해서 구성되어야합니다.");
         }
         //저장을 바로 하면 안되고 encoding해서 저장하기
         String npww = passwordEncoder.encode(npw);
         user.update(npww);
-        return new ResponseDto("비밀번호변경 완료");
+        return new ResponseDto("비밀번호가 변경되었습니다");
     }
 
     @Transactional  // soft delete 이고 게시글 댓글도 지움
