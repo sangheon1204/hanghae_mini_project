@@ -1,6 +1,7 @@
 package com.sparta.miniproject1.comment.controller;
 
 import com.sparta.miniproject1.comment.dto.CommentRequestDto;
+import com.sparta.miniproject1.comment.dto.ResponseCommentDto;
 import com.sparta.miniproject1.comment.dto.ResponseMessageDto;
 import com.sparta.miniproject1.comment.service.CommentService;
 import com.sparta.miniproject1.user.security.UserDetailsImpl;
@@ -20,7 +21,7 @@ public class CommentController {
     @ApiOperation(value = "댓글 추가", notes = "댓글을 게시글의 id를 받아서 추가한다.")
     @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
     @PostMapping("/comments")   //request 에 post 의 아이디가 들어있음
-    public ResponseMessageDto create(@RequestBody CommentRequestDto request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseCommentDto create(@RequestBody CommentRequestDto request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return commentService.create(request, userDetails.getUser());
     }
 

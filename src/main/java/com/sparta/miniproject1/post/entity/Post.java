@@ -39,14 +39,7 @@ public class Post extends Timestamped {
     private Long userId;
     @Column(nullable = false)
     private boolean state = true;
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    List<Wish> wishList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    List<Comment> commentList = new ArrayList<>();
-
-
+    
     public Post(PostRequestDto postRequestDto, User user) {
         if(postRequestDto.getImageResponseDto().getUrl() == null) {
             this.imageUrl = "https://myminiprojectbucket.s3.ap-northeast-2.amazonaws.com/image/fleamarket.png";

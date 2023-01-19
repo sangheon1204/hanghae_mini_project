@@ -1,6 +1,7 @@
 package com.sparta.miniproject1.comment.service;
 
 import com.sparta.miniproject1.comment.dto.CommentRequestDto;
+import com.sparta.miniproject1.comment.dto.ResponseCommentDto;
 import com.sparta.miniproject1.comment.dto.ResponseMessageDto;
 import com.sparta.miniproject1.comment.entity.Comment;
 import com.sparta.miniproject1.comment.repository.CommentRepository;
@@ -21,20 +22,23 @@ public class CommentService {
     private final PostRepository postRepository;
 
     @Transactional
-    public ResponseMessageDto create(CommentRequestDto request, User user) {
+    public ResponseCommentDto create(CommentRequestDto request, User user) {
         if(!request.getIsReply()) {    //댓글일 경우
             Post post = postRepository.findById(request.getReferenceId()).orElseThrow(
                     () -> new IllegalArgumentException("해당 아이디의 게시글이 존재하지 않습니다.")
             );
-            commentRepository.save(new Comment(post, user.getId(), request.getComment(), request.getIsReply(), null));
+            Comment comment = new Comment(post.getId(), user.getId(), request.getComment(), request.getIsReply(), null);
+            commentRepository.save(comment);
+            return new ResponseCommentDto(comment);
         }
-        if(request.getIsReply()) {     //대댓글일 경우
+        else {     //대댓글일 경우
             Comment comment = commentRepository.findById(request.getReferenceId()).orElseThrow(
                     () -> new IllegalArgumentException("해당 아이디의 댓글이 존재하지 않습니다.")
             );
-            commentRepository.save(new Comment(comment.getPost(), user.getId(), request.getComment(), request.getIsReply(), comment.getId()));
+            Comment reply = new Comment(comment.getPostId(), user.getId(), request.getComment(), request.getIsReply(), comment.getId());
+            commentRepository.save(reply);
+            return new ResponseCommentDto(reply);
         }
-        return new ResponseMessageDto("저장 성공!");
     }
 
     @Transactional
