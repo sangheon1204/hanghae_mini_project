@@ -102,11 +102,8 @@ public class UserService {
         return new ResponseDto(user.getNickname() + " 님 로그인 완료");
     }
     @Transactional
-    public String getInfo(User user) {
-        String username = user.getUsername();
-        String nickname = user.getNickname();
-        String imgurl = user.getImgurl();
-        return "username: "+username+"\nnickname: "+nickname+"\nimgurl: "+imgurl;
+    public UserInfoDto getInfo(User user) {
+        return new UserInfoDto(user.getUsername(),user.getNickname(),user.getImgurl());
     }
     @Transactional
     public ResponseDto changePassword(String username, ChangePasswordRequestDto changePasswordRequestDto, User user) {
