@@ -1,10 +1,10 @@
 package com.sparta.miniproject1.comment.service;
 
-import com.sparta.miniproject1.comment.dto.CommentRequestDto;
-import com.sparta.miniproject1.comment.dto.ResponseCommentDto;
-import com.sparta.miniproject1.comment.dto.ResponseMessageDto;
+import com.sparta.miniproject1.comment.dto.*;
 import com.sparta.miniproject1.comment.entity.Comment;
 import com.sparta.miniproject1.comment.repository.CommentRepository;
+import com.sparta.miniproject1.post.Replies;
+import com.sparta.miniproject1.post.dto.ReplyDto;
 import com.sparta.miniproject1.post.entity.Post;
 import com.sparta.miniproject1.post.repository.PostRepository;
 import com.sparta.miniproject1.user.entity.User;
@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +40,34 @@ public class CommentService {
             commentRepository.save(reply);
             return new ResponseCommentDto(reply);
         }
+    }
+
+    @Transactional
+    public ResponseCommentListDto get(Long id, User user) {
+        //반환할 리스트
+        List<CommentList> comments = new ArrayList<>();
+        //댓글들을 찾아옴
+        List<Comment> commentList = commentRepository.findAllByPostIdAndIsReplyAndStateOrderByCreatedAtDesc(id, false, true).orElse(new ArrayList<>());
+        for(Comment comment : commentList) {
+            //대댓글들을 찾아옴
+            List<Comment> replies = commentRepository.findAllByReferenceIdAndState(comment.getId(), true).orElse(new ArrayList<>());
+            List<ReplyList> replyList = new ArrayList<>();
+            for(Comment reply: replies) {
+                if (reply.getUserId().equals(user.getId())) {
+                    replyList.add(new ReplyList(reply.getId(), true, reply));
+                    continue;
+                }
+                //대댓글들을 dto 로 감싸줌 + id + 유저일치 여부
+                replyList.add(new ReplyList(reply.getId(), false, reply));
+            }
+            if(comment.getUserId().equals(user.getId())) {
+                comments.add(new CommentList(comment.getId(), true, comment.getComment(), replyList));
+                continue;
+            }
+            //댓글들을 dto 로 감싸줌 + id + 유저일치 여부 + 대댓글리스트 dto
+            comments.add(new CommentList(comment.getId(), true, comment.getComment(), replyList));
+        }
+        return new ResponseCommentListDto(comments);
     }
 
     @Transactional
