@@ -109,8 +109,10 @@ public class UserService {
         return "username: "+username+"\nnickname: "+nickname+"\nimgurl: "+imgurl;
     }
     @Transactional
-    public ResponseDto changePassword(ChangePasswordRequestDto changePasswordRequestDto, User user) {
-        log.info(user.getNickname());
+    public ResponseDto changePassword(String username, ChangePasswordRequestDto changePasswordRequestDto, User user) {
+        if(!user.getUsername().equals(username)){ //대리 삭제 방지
+            return new ResponseDto("다른 아이디 삭제는 안됩니다.");
+        }
         //요청받은 비번 값 확인
         String npw = changePasswordRequestDto.getPassword();
         if (!Pattern.matches(ptt, npw)) {
@@ -124,8 +126,8 @@ public class UserService {
     }
 
     @Transactional  // soft delete 이고 게시글 댓글도 지움
-    public ResponseDto softDeleteId(Long id, User user) {
-        if(!user.getId().equals(id)){ //대리 삭제 방지
+    public ResponseDto softDeleteId(String username, User user) {
+        if(!user.getUsername().equals(username)){ //대리 삭제 방지
             return new ResponseDto("다른 아이디 삭제는 안됩니다.");
         }
         // 댓글 / 대댓글 삭제
@@ -141,7 +143,7 @@ public class UserService {
         postList.forEach(Post::deletePost);
 
         // 삭제를 database -> state true->false (휴먼계정)
-        userRepository.findById(id).get().deleteUser();
+        userRepository.findByUsername(user.getUsername()).get().deleteUser();
         return new ResponseDto("아이디 삭제 완료");
     }
 

@@ -55,13 +55,13 @@ public class UserController {
         return userService.getInfo(userDetails.getUser());
     }
     @ApiOperation(value = "비밀번호 변경", notes = "사용자의 비밀번호를 변경한다.")
-    @PutMapping("/changepw")
-    public ResponseDto changePassword(@RequestBody ChangePasswordRequestDto changePasswordRequestDto,  @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return userService.changePassword(changePasswordRequestDto, userDetails.getUser());
+    @PutMapping("/changepw/{username}")
+    public ResponseDto changePassword(@PathVariable String username,@RequestBody ChangePasswordRequestDto changePasswordRequestDto,  @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userService.changePassword(username, changePasswordRequestDto, userDetails.getUser());
     }
     @ApiOperation(value = "계정 삭제", notes = "유저를 삭제한다.(자신 한정)")
-    @DeleteMapping("/delete/{id}")
-    public ResponseDto deleteBoard(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return userService.softDeleteId(id, userDetails.getUser());
+    @DeleteMapping("/delete/{username}")
+    public ResponseDto deleteBoard(@PathVariable String username,@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userService.softDeleteId(username, userDetails.getUser());
     }
 }
