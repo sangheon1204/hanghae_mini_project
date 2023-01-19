@@ -23,8 +23,9 @@ public class PostResponseDto {
     private String imageUrl;
     private List<CommentDto> comments;
     private boolean state;
+    private boolean wishState;
 
-    public PostResponseDto(Post post, List<CommentDto> comments, User user, boolean state){
+    public PostResponseDto(Post post, List<CommentDto> comments, User user, boolean state, boolean wishState){
         this.id = post.getId();
         this.name = post.getName();
         this.nickname = user.getNickname();
@@ -37,5 +38,6 @@ public class PostResponseDto {
         this.imageUrl = post.getImageUrl();
         this.comments = comments;
         this.state = state;
+        this.wishState = wishState;
     }
 }

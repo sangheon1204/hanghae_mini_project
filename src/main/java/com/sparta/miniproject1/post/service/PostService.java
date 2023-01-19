@@ -71,19 +71,29 @@ public class PostService {
         //게시글에 딸린 댓글 리스트를 가지고 있는 객체 생성
         Comments comments = new Comments(commentRepository.findAllByPostIdAndIsReplyAndStateOrderByCreatedAtDesc(post.getId(), false, true).orElse(new ArrayList<>()));
         List<CommentDto> commentDtoList = new ArrayList<>();
-        for(Comment comment : comments.getComments()) {
+        for (Comment comment : comments.getComments()) {
             //대댓글 찾기
-            if(comment.getUserId() == user.getId()) {
+            if (comment.getUserId() == user.getId()) {
                 addToCommentDtoList(commentDtoList, comment, true);
-            }else{
+            } else {
                 addToCommentDtoList(commentDtoList, comment, false);
             }
         }
-        //게시글 작성자 유무 판단
-        if(post.getUserId() == user.getId()) {
-            return new PostResponseDto(post,commentDtoList,user,true);
+        boolean wishState;
+        Optional<Wish> wish = wishRepository.findByUserIdAndPostId(user.getId(),id);
+            if (wish.isPresent()) {
+                //true-> 찜된 상태
+                wishState = !wish.get().isState();
+                //게시글 작성자 유무 판단
+                if (post.getUserId().equals(user.getId())) {
+                    return new PostResponseDto(post, commentDtoList, user, true, wishState);
+                }
+                return new PostResponseDto(post, commentDtoList, user, false, wishState);
+            }
+        if (post.getUserId().equals(user.getId())) {
+            return new PostResponseDto(post, commentDtoList, user, true, false);
         }
-        return new PostResponseDto(post,commentDtoList,user,false);
+        return new PostResponseDto(post, commentDtoList, user, false, false);
     }
 
 
