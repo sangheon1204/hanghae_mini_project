@@ -10,11 +10,13 @@ public class CommentDto {
     private Long id;
     private String comments;
     private List<ReplyDto> replyDtoList;
+    private boolean commentState;
 
-    public CommentDto(Long id, String comments, List<ReplyDto> replyDtoList) {
+    public CommentDto(Long id, String comments, List<ReplyDto> replyDtoList, boolean commentState) {
         this.id = id;
         this.comments = comments;
         this.replyDtoList = replyDtoList;
+        this.commentState = commentState;
     }
 
 }

@@ -67,15 +67,23 @@ public class PostService {
     @Transactional
     public PostResponseDto getPost(Long id, User user) {
         //id로 게시물 조회하기
-        Post post = findPostByid(id);
+        Post post = findPostById(id);
         //게시글에 딸린 댓글 리스트를 가지고 있는 객체 생성
         Comments comments = new Comments(commentRepository.findAllByPostIdAndIsReplyAndStateOrderByCreatedAtDesc(post.getId(), false, true).orElse(new ArrayList<>()));
         List<CommentDto> commentDtoList = new ArrayList<>();
         for(Comment comment : comments.getComments()) {
             //대댓글 찾기
-            Replies replies = new Replies(commentRepository.findAllByReferenceIdAndState(comment.getId(), true).orElse(new ArrayList<>()));
-            List<ReplyDto> replyDtoList = replies.getReplies().stream().map(ReplyDto :: new).collect(Collectors.toList());
-            commentDtoList.add(new CommentDto(comment.getId(),comment.getComment(),replyDtoList));
+            boolean commentState = false;
+            if(comment.getUserId() == user.getId()) {
+                commentState = true;
+                Replies replies = new Replies(commentRepository.findAllByReferenceIdAndState(comment.getId(), true).orElse(new ArrayList<>()));
+                List<ReplyDto> replyDtoList = replies.getReplies().stream().map(ReplyDto :: new).collect(Collectors.toList());
+                commentDtoList.add(new CommentDto(comment.getId(),comment.getComment(),replyDtoList,commentState));
+            }else{
+                Replies replies = new Replies(commentRepository.findAllByReferenceIdAndState(comment.getId(), true).orElse(new ArrayList<>()));
+                List<ReplyDto> replyDtoList = replies.getReplies().stream().map(ReplyDto :: new).collect(Collectors.toList());
+                commentDtoList.add(new CommentDto(comment.getId(),comment.getComment(),replyDtoList,commentState));
+            }
         }
         boolean state= false;
         if(post.getUserId() == user.getId()) {
@@ -89,7 +97,7 @@ public class PostService {
     @Transactional
     public ResponseDto updatePost(Long id, PostRequestDto request, User user) {
         //id로 게시물 찾기
-        Post post = findPostByid(id, user);
+        Post post = findPostById(id, user);
         //게시물 수정
         post.update(request);
         return new ResponseDto("수정 완료.");
@@ -99,7 +107,7 @@ public class PostService {
     @Transactional
     public ResponseDto softDeletePost(Long id, User user) {
         //id로 게시물 찾기
-        Post post = findPostByid(id,user);
+        Post post = findPostById(id,user);
 
         //대댓글 삭제 //댓글 삭제
         List<Comment> commentList = commentRepository.findAllByPostId(post.getId()).orElse(new ArrayList<>());   //댓글이랑 대댓글 포함
@@ -119,7 +127,7 @@ public class PostService {
     @Transactional
     public ResponseDto likePost(Long id, User user) {
         // id로 게시글 찾기
-        Post post = findPostByid(id);
+        Post post = findPostById(id);
         // 유저가 찜했는지 여부 확인
         Optional<Wish> wish = wishRepository.findByUserIdAndPostId(user.getId(), post.getId());
 
@@ -138,7 +146,7 @@ public class PostService {
         return new ResponseDto("찜하기");
     }
 
-    public Post findPostByid(Long id, User user){
+    public Post findPostById(Long id, User user){
         if(user.getRole() == UserRoleEnum.ADMIN) {
             Post post = postRepository.findById(id).orElseThrow(
                     ()-> new IllegalArgumentException("해당 게시물은 존재하지 않습니다.")
@@ -151,7 +159,7 @@ public class PostService {
         return post;
     }
     //게시물 단건 조회할 때 사용
-    public Post findPostByid(Long id){
+    public Post findPostById(Long id){
         Post post = postRepository.findById(id).orElseThrow(
                 ()-> new IllegalArgumentException("해당 게시물은 존재하지 않습니다.")
         );

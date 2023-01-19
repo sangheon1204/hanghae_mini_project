@@ -44,6 +44,8 @@ public class PostController {
         return postService.getPosts(page-1,size,isAsc,sortBy);
     }
     //id로 게시글 단건 조회
+    @ApiOperation(value = "게시글 상세 조회", notes = "게ㅅ글의 id로 목록을 상세 조호한다.")
+    @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
     @GetMapping("/posts/{id}")
     public PostResponseDto getPost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return postService.getPost(id, userDetails.getUser());
