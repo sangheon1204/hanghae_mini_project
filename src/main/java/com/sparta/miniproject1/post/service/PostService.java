@@ -80,12 +80,10 @@ public class PostService {
             }
         }
         //게시글 작성자 유무 판단
-        boolean state= false;
         if(post.getUserId() == user.getId()) {
-            state = true;
-            return new PostResponseDto(post,commentDtoList,user,state);
+            return new PostResponseDto(post,commentDtoList,user,true);
         }
-        return new PostResponseDto(post,commentDtoList,user,state);
+        return new PostResponseDto(post,commentDtoList,user,false);
     }
 
 
