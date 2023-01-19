@@ -42,7 +42,6 @@ public class UserController {
         Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, createToken.substring(7));
         cookie.setPath("/");
         response.addCookie(cookie);
-
         return new ResponseDto("카카오 로그인 완료");
     }
     @ApiOperation(value = "로그인", notes = "입력받은 정보를 기반으로 로그인 작업을 수행한다.")
@@ -56,9 +55,9 @@ public class UserController {
         return userService.getInfo(userDetails.getUser());
     }
     @ApiOperation(value = "비밀번호 변경", notes = "사용자의 비밀번호를 변경한다.")
-    @PutMapping("/changepw/{id}")
-    public ResponseDto changePassword(@PathVariable Long id, @RequestBody ChangePasswordRequestDto changePasswordRequestDto,  @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return userService.changePassword(id,changePasswordRequestDto, userDetails.getUser());
+    @PutMapping("/changepw")
+    public ResponseDto changePassword(@RequestBody ChangePasswordRequestDto changePasswordRequestDto,  @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userService.changePassword(changePasswordRequestDto, userDetails.getUser());
     }
     @ApiOperation(value = "계정 삭제", notes = "유저를 삭제한다.(자신 한정)")
     @DeleteMapping("/delete/{id}")

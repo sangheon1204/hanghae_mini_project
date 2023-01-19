@@ -38,7 +38,7 @@ public class UserService {
     private final CommentRepository commentRepository;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
-    // ADMIN_TOKEN
+    // ADMIN_TOKEN(추후에 써먹을 것)
     private static final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
 
     String pt = "^[a-z\\\\d`~!@#$%^&*()-_=+]{4,10}$";
@@ -109,10 +109,8 @@ public class UserService {
         return "username: "+username+"\nnickname: "+nickname+"\nimgurl: "+imgurl;
     }
     @Transactional
-    public ResponseDto changePassword(Long id, ChangePasswordRequestDto changePasswordRequestDto, User user) {
-        if(!user.getId().equals(id)){ //대리 변경 방지
-            return new ResponseDto("대리 변경은 안됩니다.");
-        }
+    public ResponseDto changePassword(ChangePasswordRequestDto changePasswordRequestDto, User user) {
+        log.info(user.getNickname());
         //요청받은 비번 값 확인
         String npw = changePasswordRequestDto.getPassword();
         if (!Pattern.matches(ptt, npw)) {
