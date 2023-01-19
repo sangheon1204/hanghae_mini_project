@@ -34,7 +34,7 @@ public class PostController {
     }
     //전체 목록 조회
     @ApiOperation(value = "게시글 목록 조회", notes = "등록된 게시글 목록 전체를 조회한다.")
-    @GetMapping("/posts")
+    @GetMapping("/posts/get")
     public Page<PageResponseDto> getPosts(
             @RequestParam("page") int page,
             @RequestParam("size") int size,
