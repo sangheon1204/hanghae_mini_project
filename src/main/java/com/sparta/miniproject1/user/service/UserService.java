@@ -110,8 +110,12 @@ public class UserService {
     }
     @Transactional
     public ResponseDto changePassword(String username, ChangePasswordRequestDto changePasswordRequestDto, User user) {
+        Optional<User> found = userRepository.findByUsername(username);
+        if (!found.isPresent()) {
+            throw new IllegalArgumentException("사용자가 없습니다.");
+        }
         if(!user.getUsername().equals(username)){ //대리 삭제 방지
-            return new ResponseDto("다른 아이디 삭제는 안됩니다.");
+            throw new IllegalArgumentException("다른 아이디 삭제는 안됩니다.");
         }
         //요청받은 비번 값 확인
         String npw = changePasswordRequestDto.getPassword();
@@ -127,8 +131,12 @@ public class UserService {
 
     @Transactional  // soft delete 이고 게시글 댓글도 지움
     public ResponseDto softDeleteId(String username, User user) {
+        Optional<User> found = userRepository.findByUsername(username);
+        if (!found.isPresent()) {
+            throw new IllegalArgumentException("사용자가 없습니다.");
+        }
         if(!user.getUsername().equals(username)){ //대리 삭제 방지
-            return new ResponseDto("다른 아이디 삭제는 안됩니다.");
+            throw new IllegalArgumentException("다른 아이디 삭제는 안됩니다.");
         }
         // 댓글 / 대댓글 삭제
         List<Comment> commentList = commentRepository.findByUserId(user.getId()).orElse(new ArrayList<>());
