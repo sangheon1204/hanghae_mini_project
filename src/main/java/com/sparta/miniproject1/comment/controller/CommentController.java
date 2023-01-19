@@ -1,9 +1,6 @@
 package com.sparta.miniproject1.comment.controller;
 
-import com.sparta.miniproject1.comment.dto.CommentRequestDto;
-import com.sparta.miniproject1.comment.dto.ResponseCommentDto;
-import com.sparta.miniproject1.comment.dto.ResponseCommentListDto;
-import com.sparta.miniproject1.comment.dto.ResponseMessageDto;
+import com.sparta.miniproject1.comment.dto.*;
 import com.sparta.miniproject1.comment.service.CommentService;
 import com.sparta.miniproject1.user.security.UserDetailsImpl;
 import io.swagger.annotations.Api;
@@ -36,7 +33,7 @@ public class CommentController {
     @ApiOperation(value = "댓글 수정", notes = "댓글을 댓글의 id로 찾아 수정한다.")
     @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
     @PatchMapping("/comments/{id}")
-    public ResponseMessageDto update(@PathVariable Long id,@RequestBody CommentRequestDto request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseMessageDto update(@PathVariable Long id, @RequestBody CommentModifyDto request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return commentService.update(id, request, userDetails.getUser());
     }
 
