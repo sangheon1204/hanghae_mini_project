@@ -14,6 +14,7 @@ import com.sparta.miniproject1.post.repository.PostRepository;
 import com.sparta.miniproject1.post.dto.ReplyDto;
 import com.sparta.miniproject1.user.entity.User;
 import com.sparta.miniproject1.user.entity.UserRoleEnum;
+import com.sparta.miniproject1.user.repository.UserRepository;
 import com.sparta.miniproject1.wish.entity.Wish;
 import com.sparta.miniproject1.wish.repository.WishRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final WishRepository wishRepository;
     private final CommentRepository commentRepository;
-
+    private final UserRepository userRepository;
 
 
     //게시글 작성하기
@@ -64,7 +65,7 @@ public class PostService {
 
 //    게시물 id로 조회하기
     @Transactional
-    public PostResponseDto getPost(Long id) {
+    public PostResponseDto getPost(Long id, User user) {
         //id로 게시물 조회하기
         Post post = findPostByid(id);
         //게시글에 딸린 댓글 리스트를 가지고 있는 객체 생성
@@ -76,7 +77,12 @@ public class PostService {
             List<ReplyDto> replyDtoList = replies.getReplies().stream().map(ReplyDto :: new).collect(Collectors.toList());
             commentDtoList.add(new CommentDto(comment.getId(),comment.getComment(),replyDtoList));
         }
-        return new PostResponseDto(post,commentDtoList);
+        boolean state= false;
+        if(post.getUserId() == user.getId()) {
+            state = true;
+            return new PostResponseDto(post,commentDtoList,user,state);
+        }
+        return new PostResponseDto(post,commentDtoList,user,state);
     }
 
     //게시물 수정

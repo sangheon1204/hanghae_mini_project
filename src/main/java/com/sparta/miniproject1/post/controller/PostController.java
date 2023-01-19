@@ -45,8 +45,8 @@ public class PostController {
     }
     //id로 게시글 단건 조회
     @GetMapping("/posts/{id}")
-    public PostResponseDto getPost(@PathVariable Long id) {
-        return postService.getPost(id);
+    public PostResponseDto getPost(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return postService.getPost(id, userDetails.getUser());
     }
 
     //id로 게시글 업데이트
