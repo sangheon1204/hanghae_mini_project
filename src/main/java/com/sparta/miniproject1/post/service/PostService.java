@@ -83,7 +83,7 @@ public class PostService {
         Optional<Wish> wish = wishRepository.findByUserIdAndPostId(user.getId(),id);
             if (wish.isPresent()) {
                 //true-> 찜된 상태
-                wishState = !wish.get().isState();
+                wishState = wish.get().isState();
                 //게시글 작성자 유무 판단
                 if (post.getUserId().equals(user.getId())) {
                     return new PostResponseDto(post, commentDtoList, user, true, wishState);
@@ -143,7 +143,7 @@ public class PostService {
         }
         //찜을 하고 있는 상태면 삭제 상태로 변경
         wish.get().updateWish();
-        if(wish.get().isState()) {
+        if(!wish.get().isState()) {
             return new ResponseDto("찜하기 취소");
         }
         //찜을 했었지만 취소했던 상태이면 다시 복원
