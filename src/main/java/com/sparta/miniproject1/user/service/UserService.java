@@ -14,6 +14,7 @@ import com.sparta.miniproject1.user.repository.UserRepository;
 import com.sparta.miniproject1.wish.entity.Wish;
 import com.sparta.miniproject1.wish.repository.WishRepository;
 
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.util.ArrayList;
@@ -51,6 +53,10 @@ public class UserService {
         String username = signupRequestDto.getUsername();
         String pwcheck = signupRequestDto.getPassword();
         String passwordCheck = signupRequestDto.getPasswordCheck();
+        String imgurl=signupRequestDto.getImageResponseDto().getUrl();
+        if(imgurl==null){
+        imgurl = "https://myminiprojectbucket.s3.ap-northeast-2.amazonaws.com/profile/user.png";
+        }
 
         //username 조건 확인
         if (!Pattern.matches(pt, username)) {
@@ -77,7 +83,7 @@ public class UserService {
         String password = passwordEncoder.encode(pwcheck);
 
         //등록등록
-        User user = new User(signupRequestDto, password);
+        User user = new User(signupRequestDto,password,imgurl);
         userRepository.save(user);
         return new ResponseDto("가입 완료");
     }
@@ -102,7 +108,15 @@ public class UserService {
         return new ResponseDto(user.getNickname() + " 님 로그인 완료");
     }
     @Transactional
-    public UserInfoDto getInfo(User user) {
+    public UserInfoDto getInfo(HttpServletRequest request) {
+        // Request에서 Token 가져오기
+        String token = jwtUtil.resolveToken(request);
+        // 토큰에서 사용자 정보 가져오기
+        Claims claims = jwtUtil.getUserInfoFromToken(token);
+        // 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
+        User user =  userRepository.findByUsername(claims.getSubject()).orElseThrow(
+                () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
+        );
         return new UserInfoDto(user.getUsername(),user.getNickname(),user.getImgurl());
     }
     @Transactional
