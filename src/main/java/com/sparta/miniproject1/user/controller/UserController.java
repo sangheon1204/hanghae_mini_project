@@ -51,7 +51,7 @@ public class UserController {
     }
     @ApiOperation(value = "로그인 유저 이름 반환", notes = "로그인 한 유저가 메인페이지를 요청할 때 유저의 이름 반환한다.")
     @GetMapping("/info")
-    public String getUserName(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public UserInfoDto getUserName(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return userService.getInfo(userDetails.getUser());
     }
     @ApiOperation(value = "비밀번호 변경", notes = "사용자의 비밀번호를 변경한다.")
