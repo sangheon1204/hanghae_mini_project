@@ -102,12 +102,11 @@ public class UserService {
         return new ResponseDto(user.getNickname() + " 님 로그인 완료");
     }
     @Transactional
-    public String getInfo(Long id) {
-        Optional<User> user = userRepository.findById(id);
-        String username = user.get().getUsername();
-        String nickname = user.get().getNickname();
-        String imgurl = user.get().getImgurl();
-        return ("username: "+username+"\nnickname: "+nickname+"\nimgurl: "+imgurl);
+    public String getInfo(User user) {
+        String username = user.getUsername();
+        String nickname = user.getNickname();
+        String imgurl = user.getImgurl();
+        return "username: "+username+"\nnickname: "+nickname+"\nimgurl: "+imgurl;
     }
     @Transactional
     public ResponseDto changePassword(Long id, ChangePasswordRequestDto changePasswordRequestDto, User user) {
