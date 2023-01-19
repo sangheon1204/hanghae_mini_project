@@ -73,18 +73,13 @@ public class PostService {
         List<CommentDto> commentDtoList = new ArrayList<>();
         for(Comment comment : comments.getComments()) {
             //대댓글 찾기
-            boolean commentState = false;
             if(comment.getUserId() == user.getId()) {
-                commentState = true;
-                Replies replies = new Replies(commentRepository.findAllByReferenceIdAndState(comment.getId(), true).orElse(new ArrayList<>()));
-                List<ReplyDto> replyDtoList = replies.getReplies().stream().map(ReplyDto :: new).collect(Collectors.toList());
-                commentDtoList.add(new CommentDto(comment.getId(),comment.getComment(),replyDtoList,commentState));
+                addToCommentDtoList(commentDtoList, comment, true);
             }else{
-                Replies replies = new Replies(commentRepository.findAllByReferenceIdAndState(comment.getId(), true).orElse(new ArrayList<>()));
-                List<ReplyDto> replyDtoList = replies.getReplies().stream().map(ReplyDto :: new).collect(Collectors.toList());
-                commentDtoList.add(new CommentDto(comment.getId(),comment.getComment(),replyDtoList,commentState));
+                addToCommentDtoList(commentDtoList, comment, false);
             }
         }
+        //게시글 작성자 유무 판단
         boolean state= false;
         if(post.getUserId() == user.getId()) {
             state = true;
@@ -92,6 +87,7 @@ public class PostService {
         }
         return new PostResponseDto(post,commentDtoList,user,state);
     }
+
 
     //게시물 수정
     @Transactional
@@ -164,5 +160,11 @@ public class PostService {
                 ()-> new IllegalArgumentException("해당 게시물은 존재하지 않습니다.")
         );
         return post;
+    }
+    //댓글 리스트에 담아 반환하기
+    private void addToCommentDtoList(List<CommentDto> commentDtoList, Comment comment, boolean commentState) {
+        Replies replies = new Replies(commentRepository.findAllByReferenceIdAndState(comment.getId(), true).orElse(new ArrayList<>()));
+        List<ReplyDto> replyDtoList = replies.getReplies().stream().map(ReplyDto :: new).collect(Collectors.toList());
+        commentDtoList.add(new CommentDto(comment.getId(), comment.getComment(),replyDtoList, commentState));
     }
 }
