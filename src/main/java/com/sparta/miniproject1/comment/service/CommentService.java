@@ -47,7 +47,7 @@ public class CommentService {
         //반환할 리스트
         List<CommentList> comments = new ArrayList<>();
         //댓글들을 찾아옴
-        List<Comment> commentList = commentRepository.findAllByPostIdAndIsReplyAndStateOrderByCreatedAtDesc(id, false, true).orElse(new ArrayList<>());
+        List<Comment> commentList = commentRepository.findAllByPostIdAndIsReplyAndStateOrderByIdAsc(id, false, true).orElse(new ArrayList<>());
         for(Comment comment : commentList) {
             //대댓글들을 찾아옴
             List<Comment> replies = commentRepository.findAllByReferenceIdAndState(comment.getId(), true).orElse(new ArrayList<>());

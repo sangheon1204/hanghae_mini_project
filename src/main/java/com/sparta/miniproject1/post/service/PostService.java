@@ -69,7 +69,7 @@ public class PostService {
         //id로 게시물 조회하기
         Post post = findPostById(id);
         //게시글에 딸린 댓글 리스트를 가지고 있는 객체 생성
-        Comments comments = new Comments(commentRepository.findAllByPostIdAndIsReplyAndStateOrderByCreatedAtDesc(post.getId(), false, true).orElse(new ArrayList<>()));
+        Comments comments = new Comments(commentRepository.findAllByPostIdAndIsReplyAndStateOrderByIdAsc(post.getId(), false, true).orElse(new ArrayList<>()));
         List<CommentDto> commentDtoList = new ArrayList<>();
         for (Comment comment : comments.getComments()) {
             //대댓글 찾기

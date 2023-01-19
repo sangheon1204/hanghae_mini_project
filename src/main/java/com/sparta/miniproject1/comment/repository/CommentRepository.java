@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
-    Optional<List<Comment>> findAllByPostIdAndIsReplyAndStateOrderByCreatedAtDesc(Long id, Boolean check, boolean state);
+    Optional<List<Comment>> findAllByPostIdAndIsReplyAndStateOrderByIdAsc(Long id, Boolean check, boolean state);
     Optional<List<Comment>> findAllByReferenceIdAndState(Long id, boolean state);
     Optional<List<Comment>> findAllByPostIdAndState(Long id, boolean state);
     Optional<List<Comment>> findByUserId(Long userId);
