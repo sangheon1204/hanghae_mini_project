@@ -2,6 +2,7 @@ package com.sparta.miniproject1.comment.controller;
 
 import com.sparta.miniproject1.comment.dto.CommentRequestDto;
 import com.sparta.miniproject1.comment.dto.ResponseCommentDto;
+import com.sparta.miniproject1.comment.dto.ResponseCommentListDto;
 import com.sparta.miniproject1.comment.dto.ResponseMessageDto;
 import com.sparta.miniproject1.comment.service.CommentService;
 import com.sparta.miniproject1.user.security.UserDetailsImpl;
@@ -23,6 +24,13 @@ public class CommentController {
     @PostMapping("/comments")   //request 에 post 의 아이디가 들어있음
     public ResponseCommentDto create(@RequestBody CommentRequestDto request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         return commentService.create(request, userDetails.getUser());
+    }
+
+    @ApiOperation(value = "댓글 받기", notes = "댓글들을 게시글의 id를 받아서 ")
+    @ApiImplicitParam(name = "authorization", value = "authorization", required = true, dataType = "string", paramType = "header")
+    @GetMapping("/comments/{id}")
+    public ResponseCommentListDto get(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return commentService.get(id, userDetails.getUser());
     }
 
     @ApiOperation(value = "댓글 수정", notes = "댓글을 댓글의 id로 찾아 수정한다.")
