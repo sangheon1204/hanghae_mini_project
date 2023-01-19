@@ -49,7 +49,7 @@ public class Post extends Timestamped {
 
     public Post(PostRequestDto postRequestDto, User user) {
         if(postRequestDto.getImageResponseDto().getUrl() == null) {
-            this.imageUrl = "https://myminiprojectbucket.s3.ap-northeast-2.amazonaws.com/fleamarket.png";
+            this.imageUrl = "https://myminiprojectbucket.s3.ap-northeast-2.amazonaws.com/image/fleamarket.png";
         }else{
             this.imageUrl = postRequestDto.getImageResponseDto().getUrl();
         }
