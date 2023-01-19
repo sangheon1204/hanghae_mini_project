@@ -96,7 +96,7 @@ public class PostService {
         Post post = findPostByid(id,user);
 
         //대댓글 삭제 //댓글 삭제
-        List<Comment> commentList = commentRepository.findAllByPost_Id(post.getId()).orElse(new ArrayList<>());   //댓글이랑 대댓글 포함
+        List<Comment> commentList = commentRepository.findAllByPostId(post.getId()).orElse(new ArrayList<>());   //댓글이랑 대댓글 포함
         commentList.forEach(Comment::deleteComment);
 
         //찜 삭제

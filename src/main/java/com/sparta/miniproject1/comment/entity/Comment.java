@@ -13,29 +13,28 @@ import javax.persistence.*;
 public class Comment extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private Post post;
+    @Column(nullable = false)
+    private Long postId;
 
     @Column(nullable = false)
     private Long userId;
 
     @Column(nullable = false)
-    String comment;
+    private String comment;
 
     @Column(nullable = false)
-    Boolean isReply;    //댓글인지 대댓글인지 판별
+    private Boolean isReply;    //댓글인지 대댓글인지 판별
 
     @Column
-    Long referenceId;   //참조한 댓글의 id
+    private Long referenceId;   //참조한 댓글의 id
 
     @Column(nullable = false)
     private boolean state = true;
 
-    public Comment(Post post, Long userId, String comment, Boolean isReply, Long referenceId) {
-        this.post = post;
+    public Comment(Long postId, Long userId, String comment, Boolean isReply, Long referenceId) {
+        this.postId = postId;
         this.userId = userId;
         this.comment = comment;
         this.isReply = isReply;
