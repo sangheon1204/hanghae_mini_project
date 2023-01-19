@@ -1,11 +1,8 @@
 package com.sparta.miniproject1.user.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.sparta.miniproject1.user.dto.ChangePasswordRequestDto;
+import com.sparta.miniproject1.user.dto.*;
 
-import com.sparta.miniproject1.user.dto.LoginRequestDto;
-import com.sparta.miniproject1.user.dto.ResponseDto;
-import com.sparta.miniproject1.user.dto.SignupRequestDto;
 import com.sparta.miniproject1.user.jwt.JwtUtil;
 import com.sparta.miniproject1.user.security.UserDetailsImpl;
 import com.sparta.miniproject1.user.service.KakaoService;
@@ -54,9 +51,9 @@ public class UserController {
         return userService.login(loginRequestDto, response);
     }
     @ApiOperation(value = "로그인 유저 이름 반환", notes = "로그인 한 유저가 메인페이지를 요청할 때 유저의 이름 반환한다.")
-    @GetMapping("/info")
-    public String getUserName(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return userDetails.getUsername();
+    @GetMapping("/info/{id}")
+    public String getUserName(@PathVariable Long id) {
+        return userService.getInfo(id);
     }
     @ApiOperation(value = "비밀번호 변경", notes = "사용자의 비밀번호를 변경한다.")
     @PutMapping("/changepw/{id}")

@@ -101,10 +101,17 @@ public class UserService {
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername(), user.getRole()));
         return new ResponseDto(user.getNickname() + " 님 로그인 완료");
     }
-
+    @Transactional
+    public String getInfo(Long id) {
+        Optional<User> user = userRepository.findById(id);
+        String username = user.get().getUsername();
+        String nickname = user.get().getNickname();
+        String imgurl = user.get().getImgurl();
+        return ("username: "+username+"\nnickname: "+nickname+"\nimgurl: "+imgurl);
+    }
     @Transactional
     public ResponseDto changePassword(Long id, ChangePasswordRequestDto changePasswordRequestDto, User user) {
-        if(user.getId()!=id){ //대리 변경 방지
+        if(!user.getId().equals(id)){ //대리 변경 방지
             return new ResponseDto("대리 변경은 안됩니다.");
         }
         //요청받은 비번 값 확인
@@ -121,7 +128,7 @@ public class UserService {
 
     @Transactional  // soft delete 이고 게시글 댓글도 지움
     public ResponseDto softDeleteId(Long id, User user) {
-        if(user.getId()!=id){ //대리 삭제 방지
+        if(!user.getId().equals(id)){ //대리 삭제 방지
             return new ResponseDto("다른 아이디 삭제는 안됩니다.");
         }
         // 댓글 / 대댓글 삭제
