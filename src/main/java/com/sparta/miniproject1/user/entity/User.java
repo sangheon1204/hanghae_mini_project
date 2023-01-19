@@ -27,11 +27,11 @@ public class User {
     @Column(nullable = false)
     private boolean state = true;
 
-    public User(SignupRequestDto signupRequestDto, String password) {
+    public User(SignupRequestDto signupRequestDto, String password, String imgurl) {
         this.username = signupRequestDto.getUsername();
         this.nickname = signupRequestDto.getNickname();
         this.password = password;
-        this.imgurl = signupRequestDto.getImageResponseDto().getUrl();
+        this.imgurl = imgurl;
     }
     public User(String username, Long kakaoId, String password, String imgurl) {
         this.username = username;
