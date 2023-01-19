@@ -11,6 +11,7 @@ import com.sparta.miniproject1.user.security.UserDetailsImpl;
 import com.sparta.miniproject1.user.service.KakaoService;
 import com.sparta.miniproject1.user.service.UserService;
 
+import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,10 +21,10 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.ApiOperation;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
+@Api(tags = {"Users"})
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
@@ -35,18 +36,11 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseDto signup(@RequestBody SignupRequestDto signupRequestDto) {
         return userService.signup(signupRequestDto);
-
     }
-    @ApiOperation(value = "카카오 로그인", notes = "입력받은 정보를 기반으로 로그인 작업을 수행한다.")
-    @GetMapping("/kakao/callback")    //카카오 로그인
+    @ApiOperation(value = "카카오 로그인", notes = "이것은 카카오 로그인 버튼을 누름을 통해서 수행된다.")
+    @GetMapping("/kakao/callback")    //카카오로부터 코드 받고, 다시 전달해서
     public ResponseDto kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
-        log.info("나와라");
-        log.info(code);
-
-        // code: 카카오 서버로부터 받은 인가 코드
         String createToken = kakaoService.kakaoLogin(code);
-
-        log.info("토큰: "+createToken);
         // Cookie 생성 및 직접 브라우저에 Set
         Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, createToken.substring(7));
         cookie.setPath("/");
@@ -66,12 +60,12 @@ public class UserController {
     }
     @ApiOperation(value = "비밀번호 변경", notes = "사용자의 비밀번호를 변경한다.")
     @PutMapping("/changepw/{id}")
-    public ResponseDto changePassword(@PathVariable Long id, @RequestBody ChangePasswordRequestDto changePasswordRequestDto,  HttpServletRequest request) {
-        return userService.changePassword(id,changePasswordRequestDto, request);
+    public ResponseDto changePassword(@PathVariable Long id, @RequestBody ChangePasswordRequestDto changePasswordRequestDto,  @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userService.changePassword(id,changePasswordRequestDto, userDetails.getUser());
     }
     @ApiOperation(value = "계정 삭제", notes = "유저를 삭제한다.(자신 한정)")
     @DeleteMapping("/delete/{id}")
-    public ResponseDto deleteBoard(@PathVariable Long id, HttpServletRequest request) {
-        return userService.softDeleteId(id, request);
+    public ResponseDto deleteBoard(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return userService.softDeleteId(id, userDetails.getUser());
     }
 }

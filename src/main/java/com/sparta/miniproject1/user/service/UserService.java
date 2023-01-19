@@ -2,27 +2,27 @@ package com.sparta.miniproject1.user.service;
 
 import com.sparta.miniproject1.comment.entity.Comment;
 import com.sparta.miniproject1.comment.repository.CommentRepository;
+
 import com.sparta.miniproject1.post.entity.Post;
 import com.sparta.miniproject1.post.repository.PostRepository;
-import com.sparta.miniproject1.user.dto.*;
 
+import com.sparta.miniproject1.user.dto.*;
 import com.sparta.miniproject1.user.entity.User;
 import com.sparta.miniproject1.user.jwt.JwtUtil;
 import com.sparta.miniproject1.user.repository.UserRepository;
 
 import com.sparta.miniproject1.wish.entity.Wish;
 import com.sparta.miniproject1.wish.repository.WishRepository;
-import io.jsonwebtoken.Claims;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
-import javax.servlet.http.HttpServletRequest;
-
 import javax.servlet.http.HttpServletResponse;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -99,23 +99,14 @@ public class UserService {
         }
         //토큰을 생성해서 유저에게 줌
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername(), user.getRole()));
-        return new ResponseDto("로그인 완료");
+        return new ResponseDto(user.getNickname() + " 님 로그인 완료");
     }
 
     @Transactional
-    public ResponseDto changePassword(Long id, ChangePasswordRequestDto changePasswordRequestDto, HttpServletRequest request) {
-        String token = jwtUtil.resolveToken(request);
-        Claims claims;
-        if (jwtUtil.validateToken(token)) {
-            // 토큰에서 사용자 정보 가져오기
-            claims = jwtUtil.getUserInfoFromToken(token);
-        } else {
-            throw new IllegalArgumentException("Token Error");
+    public ResponseDto changePassword(Long id, ChangePasswordRequestDto changePasswordRequestDto, User user) {
+        if(user.getId()!=id){ //대리 변경 방지
+            return new ResponseDto("대리 변경은 안됩니다.");
         }
-        // 해당 사용자 찾기
-        User user =  userRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
-        );
         //요청받은 비번 값 확인
         String npw = changePasswordRequestDto.getPassword();
         if (!Pattern.matches(ptt, npw)) {
@@ -128,26 +119,11 @@ public class UserService {
         return new ResponseDto("비밀번호변경 완료");
     }
 
-
-    @Transactional  // soft delete 이지만 게시글 댓글을 남김
-    public ResponseDto deleteId(Long id, HttpServletRequest request) {
-        User user = getUser(request);
-        if(user.getId()!=id){ //대리 삭제 방지
-            return new ResponseDto("다른 아이디 삭제는 안됩니다.");
-        }
-        // 삭제를 database -> state true->false (휴먼계정)
-        user.deleteUser();
-        return new ResponseDto("아이디 삭제 완료");
-
-    }
-
     @Transactional  // soft delete 이고 게시글 댓글도 지움
-    public ResponseDto softDeleteId(Long id, HttpServletRequest request) {
-        User user = getUser(request);
+    public ResponseDto softDeleteId(Long id, User user) {
         if(user.getId()!=id){ //대리 삭제 방지
             return new ResponseDto("다른 아이디 삭제는 안됩니다.");
         }
-
         // 댓글 / 대댓글 삭제
         List<Comment> commentList = commentRepository.findByUserId(user.getId()).orElse(new ArrayList<>());
         commentList.forEach(Comment::deleteComment);
@@ -161,24 +137,8 @@ public class UserService {
         postList.forEach(Post::deletePost);
 
         // 삭제를 database -> state true->false (휴먼계정)
-        user.deleteUser();
+        userRepository.findById(id).get().deleteUser();
         return new ResponseDto("아이디 삭제 완료");
-    }
-
-    private User getUser(HttpServletRequest request) {
-        String token = jwtUtil.resolveToken(request);
-        Claims claims;
-        if (jwtUtil.validateToken(token)) {
-            // 토큰에서 사용자 정보 가져오기
-            claims = jwtUtil.getUserInfoFromToken(token);
-        } else {
-            throw new IllegalArgumentException("Token Error");
-        }
-        // 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
-        User user =  userRepository.findByUsername(claims.getSubject()).orElseThrow(
-                () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
-        );
-        return user;
     }
 
 }
