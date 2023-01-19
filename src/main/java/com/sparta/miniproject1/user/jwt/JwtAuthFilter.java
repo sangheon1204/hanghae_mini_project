@@ -30,7 +30,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         if(request.getRequestURI().equals("/api/user/signup") || request.getRequestURI().equals("/api/user/login")
                 || request.getRequestURI().equals("/files/image") || request.getRequestURI().equals("/files/profile")
-                || request.getRequestURI().equals("/posts/get")) {
+                || request.getRequestURI().equals("/posts/get") || request.getRequestURI().equals("/api/user/info")) {
             filterChain.doFilter(request,response);
             return;
         }
