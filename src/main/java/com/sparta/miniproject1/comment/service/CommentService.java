@@ -22,7 +22,7 @@ public class CommentService {
     @Transactional
     public ResponseCommentDto create(CommentRequestDto request, User user) {
         if(!request.getIsReply()) {    //댓글일 경우
-            Post post = postRepository.findById(request.getReferenceId()).orElseThrow(
+            Post post = postRepository.findByIdAndState(request.getReferenceId(), true).orElseThrow(
                     () -> new IllegalArgumentException("해당 아이디의 게시글이 존재하지 않습니다.")
             );
             Comment comment = new Comment(post.getId(), user.getId(), request.getComment(), request.getIsReply(), null);
@@ -30,7 +30,7 @@ public class CommentService {
             return new ResponseCommentDto(comment);
         }
         else {     //대댓글일 경우
-            Comment comment = commentRepository.findById(request.getReferenceId()).orElseThrow(
+            Comment comment = commentRepository.findByIdAndState(request.getReferenceId(), true).orElseThrow(
                     () -> new IllegalArgumentException("해당 아이디의 댓글이 존재하지 않습니다.")
             );
             Comment reply = new Comment(comment.getPostId(), user.getId(), request.getComment(), request.getIsReply(), comment.getId());
@@ -86,7 +86,7 @@ public class CommentService {
     }
 
     private Comment getComment(Long id, User user) {
-        Comment comment = commentRepository.findById(id).orElseThrow(
+        Comment comment = commentRepository.findByIdAndState(id, true).orElseThrow(
                 () -> new IllegalArgumentException("해당 아이디의 댓글이 존재하지 않습니다.")
         );
         if(!comment.getUserId().equals(user.getId())) {
