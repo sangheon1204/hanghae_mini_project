@@ -74,7 +74,7 @@ public class UserService {
                     "비밀번호 입력을 다시 확인해주세요.");
         }
         // 회원 중복 확인
-        Optional<User> found = userRepository.findByUsername(username);
+        Optional<User> found = userRepository.findByUsernameAndState(username, true);
         if (found.isPresent()) {
             throw new IllegalArgumentException("중복된 사용자가 존재합니다.");
         }
@@ -96,7 +96,7 @@ public class UserService {
         String password = loginRequestDto.getPassword();
 
         // 사용자 확인
-        User user = userRepository.findByUsername(username).orElseThrow(
+        User user = userRepository.findByUsernameAndState(username, true).orElseThrow(
                 () -> new IllegalArgumentException("등록된 사용자가 없습니다.")
         );
         // 비밀번호 확인
@@ -114,15 +114,15 @@ public class UserService {
         // 토큰에서 사용자 정보 가져오기
         Claims claims = jwtUtil.getUserInfoFromToken(token);
         // 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
-        User user =  userRepository.findByUsername(claims.getSubject()).orElseThrow(
+        User user =  userRepository.findByUsernameAndState(claims.getSubject(), true).orElseThrow(
                 () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
         );
         return new UserInfoDto(user.getUsername(),user.getNickname(),user.getImgurl());
     }
     @Transactional
     public ResponseDto changePassword(String username, ChangePasswordRequestDto changePasswordRequestDto, User user) {
-        Optional<User> found = userRepository.findByUsername(username);
-        if (!found.isPresent()) {
+        Optional<User> found = userRepository.findByUsernameAndState(username, true);
+        if (found.isEmpty() || !found.get().isState()) {    //삭제된 상태에서 비밀번호 변경 방지
             throw new IllegalArgumentException("사용자가 없습니다.");
         }
         if(!user.getUsername().equals(username)){ //대리 삭제 방지
@@ -142,8 +142,8 @@ public class UserService {
 
     @Transactional  // soft delete 이고 게시글 댓글도 지움
     public ResponseDto softDeleteId(String username, User user) {
-        Optional<User> found = userRepository.findByUsername(username);
-        if (!found.isPresent()) {
+        Optional<User> found = userRepository.findByUsernameAndState(username, true);
+        if (found.isEmpty() || !found.get().isState()) {    //삭제된 상태에서 다시 삭제 방지
             throw new IllegalArgumentException("사용자가 없습니다.");
         }
         if(!user.getUsername().equals(username)){ //대리 삭제 방지
@@ -162,7 +162,7 @@ public class UserService {
         postList.forEach(Post::deletePost);
 
         // 삭제를 database -> state true->false (휴먼계정)
-        userRepository.findByUsername(user.getUsername()).get().deleteUser();
+        found.get().deleteUser();
         return new ResponseDto("아이디 삭제 완료");
     }
 
