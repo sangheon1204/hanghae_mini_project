@@ -159,15 +159,15 @@ public class PostService {
                     ()-> new IllegalArgumentException("해당 게시물은 존재하지 않습니다.")
             );
             return post;
-        }
-        Post post = postRepository.findByIdAndUserId(id,user.getId()).orElseThrow(
+        }       //살아있는 게시글들 찾기
+        Post post = postRepository.findByIdAndUserIdAndState(id, user.getId(), true).orElseThrow(
                 ()-> new IllegalArgumentException("해당 게시물은 존재하지 않습니다.")
         );
         return post;
     }
     //게시물 단건 조회할 때 사용
-    public Post findPostById(Long id){
-        Post post = postRepository.findById(id).orElseThrow(
+    public Post findPostById(Long id){  //살아있는 게시글만 찾기
+        Post post = postRepository.findByIdAndState(id, true).orElseThrow(
                 ()-> new IllegalArgumentException("해당 게시물은 존재하지 않습니다.")
         );
         return post;

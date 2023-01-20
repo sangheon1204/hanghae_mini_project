@@ -10,9 +10,11 @@ import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    Optional<Post> findByIdAndUserId(Long id,Long userId);
+    Optional<Post> findByIdAndUserIdAndState(Long id, Long userId, boolean state);
 
     Optional<List<Post>> findByUserId(Long userId);
 
     Optional<Page<Post>> findAllByState(Pageable pageable, boolean state);
+
+    Optional<Post> findByIdAndState(Long id, boolean state);
 }
